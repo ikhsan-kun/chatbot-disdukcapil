@@ -1,0 +1,115 @@
+.tambah-container{
+    display: flex;
+    justify-content: center;
+    padding: 50px 20px;
+}
+
+.tambah-card{
+    width: 900px;
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.tambah-card h1{
+    margin-bottom: 35px;
+
+    color: #1e293b;
+
+    font-size: 36px;
+}
+
+.form-group{
+    margin-bottom: 25px;
+}
+
+.form-group label{
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+.form-group input,
+.form-group textarea{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 16px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus{
+    border-color: #2563eb;
+
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+}
+
+.button-group{
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-simpan{
+    flex: 1;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.btn-simpan:hover{
+    background: #1d4ed8;
+}
+
+.btn-batal{
+    flex: 1;
+
+    background: #ef4444;
+
+    color: white;
+
+    text-decoration: none;
+
+    text-align: center;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+}
+
+.btn-batal:hover{
+    background: #dc2626;
+}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="login-section">
+    <div class="login-card">
+
+        <div class="login-icon">
+            👤
+        </div>
+
+        <h2>Daftar Akun</h2>
+        <p class="login-subtitle">Buat akun baru untuk mengakses layanan</p>
+
+        <form method="POST" action="/register">
+
+            <label for="nik">NIK</label>
+            <input 
+                type="text" 
+                id="nik"
+                name="nik"
+                placeholder="Masukkan 16 digit NIK"
+                maxlength="16"
+                pattern="\d{16}"
+                required
+                oninput="this.value=this.value.replace(/\D/g,'').slice(0,16);"
+            >
+            <small id="nikWarning" class="warning-text"></small>
+
+            <label for="nama">Nama Lengkap</label>
+            <input 
+                type="text" 
+                id="nama"
+                name="nama"
+                placeholder="Masukkan nama lengkap"
+                required
+            >
+
+            <label for="email">Email</label>
+            <input 
+                type="email" 
+                id="email"
+                name="email"
+                placeholder="nama@email.com"
+                required
+            >
+
+            <!-- PASSWORD -->
+            <label for="password">Password</label>
+            <div class="password-box">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Minimal 6 karakter"
+                    minlength="6"
+                    required
+                >
+                <span class="show-password" onclick="togglePassword()" id="eyeIcon">
+                    <svg id="iconShow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <svg id="iconHide" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                </span>
+            </div>
+
+            <!-- KONFIRMASI PASSWORD -->
+            <label for="confirm_password">Konfirmasi Password</label>
+            <div class="password-box">
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Ulangi password"
+                    minlength="6"
+                    required
+                >
+                <span class="show-password" onclick="toggleConfirmPassword()" id="eyeIconConfirm">
+                    <svg id="iconShowConfirm" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <svg id="iconHideConfirm" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                        <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                        <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                </span>
+            </div>
+
+            <button type="submit" class="btn-login">Daftar</button>
+        </form>
+
+        <p class="register-link">
+            Sudah punya akun?
+            <a href="/login">Masuk</a>
+        </p>
+
+    </div>
+</section>
+
+<script>
+// ==========================
+// VALIDASI NIK
+// ==========================
+const nikInputReg = document.getElementById("nik");
+const nikWarningReg = document.getElementById("nikWarning");
+
+nikInputReg.addEventListener("input", function () {
+    // hanya angka, max 16
+    this.value = this.value.replace(/\D/g, '').slice(0, 16);
+
+    if (this.value.length > 0 && this.value.length < 16) {
+        nikWarningReg.innerText = "⚠️ NIK harus 16 digit (saat ini " + this.value.length + " digit)";
+    } else {
+        nikWarningReg.innerText = "";
+    }
+});
+</script>
+
+{% endblock %}

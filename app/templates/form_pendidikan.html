@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container" style="max-width: 750px; margin: 40px auto;">
+
+    <a href="/pengajuan" class="btn-back" style="text-decoration: none; color: var(--primary); font-weight: 700; font-size: 14.5px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; transition: var(--transition-fast);">
+        ← Kembali
+    </a>
+
+    <h2 style="font-size: 26px; font-weight: 800; color: var(--neutral-900); margin-bottom: 8px; text-align: left;">
+        Form Perubahan Status Pendidikan
+    </h2>
+    <p style="color: var(--neutral-500); font-size: 14.5px; margin-bottom: 32px; line-height: 1.6;">
+        Silakan isi data diri Anda secara lengkap untuk pengajuan perubahan data jenjang pendidikan terakhir.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- SEKSI 1: DATA UTAMA PEMOHON -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <span>👤</span> Data Utama Pemohon
+            </div>
+            
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="nik">NIK Pemohon</label>
+                    <input type="text" id="nik" name="nik" placeholder="16 Digit NIK Sesuai KTP" required 
+                           pattern="\d{16}" minlength="16" maxlength="16" title="NIK harus berupa 16 digit angka"
+                           oninput="this.value=this.value.replace(/\D/g,'').slice(0,16); validateNik(this);">
+                    <small id="nikWarning" class="warning-text"></small>
+                </div>
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap Pemohon</label>
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama sesuai KTP" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKSI 2: PERUBAHAN PENDIDIKAN -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <span>🎓</span> Perubahan Data Pendidikan
+            </div>
+            
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="pendidikan_lama">Jenjang Pendidikan Terakhir (Lama)</label>
+                    <input type="text" id="pendidikan_lama" name="pendidikan_lama" placeholder="Contoh: SLTA / Sederajat" required>
+                </div>
+                <div class="form-group">
+                    <label for="pendidikan_baru">Jenjang Pendidikan Terakhir (Baru)</label>
+                    <select id="pendidikan_baru" name="pendidikan_baru" required>
+                        <option value="">-- Pilih Jenjang Baru --</option>
+                        <option value="tidak_sekolah">Tidak/Belum Sekolah</option>
+                        <option value="belum_tamat_sd">Belum Tamat SD/Sederajat</option>
+                        <option value="tamat_sd">Tamat SD/Sederajat</option>
+                        <option value="sltp">SLTP/Sederajat</option>
+                        <option value="slta">SLTA/Sederajat</option>
+                        <option value="diploma_1_2">Diploma I/II</option>
+                        <option value="diploma_3">Akademi/Diploma III/Sarjana Muda</option>
+                        <option value="s1">Diploma IV/Strata I</option>
+                        <option value="s2">Strata II</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKSI 3: DOKUMEN PERSYARATAN & CATATAN -->
+        <style>
+            .btn-download-f106:hover {
+                background: var(--primary-hover) !important;
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg) !important;
+            }
+            .f106-container {
+                border: 2px dashed rgba(37, 99, 235, 0.3);
+                background: rgba(37, 99, 235, 0.02);
+                border-radius: var(--radius-lg);
+                padding: 24px;
+                margin-bottom: 24px;
+                transition: var(--transition);
+            }
+            .f106-container:hover {
+                border-color: var(--primary);
+                background: var(--primary-light);
+            }
+        </style>
+        
+        <div class="form-section">
+            <div class="form-section-title">
+                <span>📎</span> Dokumen Persyaratan & Catatan
+            </div>
+
+            <!-- Bagian Khusus Dokumen F-1.06 -->
+            <div class="f106-container">
+                <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px;">
+                    <div style="font-size: 32px; background: var(--primary-light); padding: 12px; border-radius: var(--radius-md); line-height: 1; display: flex; align-items: center; justify-content: center;">📝</div>
+                    <div>
+                        <strong style="color: var(--neutral-900); font-size: 16px; display: block; margin-bottom: 6px;">Surat Pernyataan Perubahan Elemen Data (F-1.06)</strong>
+                        <p style="color: var(--neutral-500); font-size: 13.5px; line-height: 1.6; margin: 0;">
+                            Berdasarkan bimbingan Disdukcapil, pengajuan ini <strong>wajib</strong> melampirkan Formulir F-1.06 yang telah diunduh, dicetak, diisi, ditandatangani di atas <strong>meterai Rp 10.000</strong>, lalu diunggah kembali di sini.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; border-top: 1px solid var(--neutral-100); padding-top: 16px;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px;">
+                        <a href="/static/F1.06-SURAT-PERNYATAAN-PERUBAHAN-ELEMEN-DATA.pdf" 
+                           download="F1.06-SURAT-PERNYATAAN-PERUBAHAN-ELEMEN-DATA.pdf"
+                           class="btn-download-f106" 
+                           style="display: inline-flex; align-items: center; gap: 8px; background: var(--primary); color: white; padding: 10px 20px; border-radius: var(--radius-md); font-weight: 700; font-size: 13.5px; text-decoration: none; box-shadow: var(--shadow-md); transition: var(--transition); border: 1px solid transparent;">
+                            📥 Unduh Formulir F-1.06
+                        </a>
+                        <span style="font-size: 12.5px; color: var(--neutral-500);">
+                            Atau gunakan <a href="https://ugc.production.linktr.ee/e486752d-6fb1-46cf-8131-5ca60f403d0c_F1.06-SURAT-PERNYATAAN-PERUBAHAN-ELEMEN-DATA.pdf" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600;">Link Alternatif</a> jika terjadi kendala.
+                        </span>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 8px;">
+                        <label for="file_f106" style="font-weight: 700; font-size: 13px; color: var(--neutral-700); margin-bottom: 6px; display: block;">Unggah Berkas F-1.06 yang Sudah Ditandatangani & Bermaterai (Wajib)</label>
+                        <input type="file" id="file_f106" name="file_upload" accept=".jpg,.jpeg,.png,.pdf" required
+                               style="background: white; border: 1px solid var(--neutral-200); border-radius: var(--radius-md); padding: 8px 12px; font-size: 13.5px; width: 100%;">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dokumen Persyaratan Lainnya -->
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Dokumen Persyaratan Lainnya (Opsional / Tambahan)</label>
+                <div class="upload-container" style="text-align: left; padding: 20px;">
+                    <div class="upload-text" style="margin-bottom: 12px;">
+                        Silakan unggah dokumen persyaratan tambahan Anda seperti KTP, Ijazah Kelulusan Terakhir, atau Surat Keterangan Sekolah.
+                    </div>
+                    <div id="file-container">
+                        <div class="file-input-wrapper">
+                            <input type="file" name="file_upload" accept=".jpg,.jpeg,.png,.pdf">
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn-tambah-file" onclick="tambahFile()" 
+                            style="margin-top: 14px; width: 100%; padding: 10px; background: white; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); color: var(--neutral-700); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
+                        + Tambah Berkas Lainnya
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="catatan">Catatan Tambahan (Opsional)</label>
+                <textarea id="catatan" name="catatan" placeholder="Tambahkan catatan pendukung jika diperlukan" style="min-height: 100px; resize: vertical;"></textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="form-btn-submit" style="margin-top: 10px;">
+            Kirim Pengajuan Perubahan Status Pendidikan
+        </button>
+
+    </form>
+
+</div>
+
+<!-- js upload gambar -->
+<script>
+function tambahFile() {
+    const container = document.getElementById("file-container");
+    const wrapper = document.createElement("div");
+    wrapper.className = "file-input-wrapper";
+    wrapper.style.marginTop = "12px";
+    
+    const input = document.createElement("input");
+    input.type = "file";
+    input.name = "file_upload";
+    input.accept = ".jpg,.jpeg,.png,.pdf";
+    
+    const btnRemove = document.createElement("button");
+    btnRemove.type = "button";
+    btnRemove.className = "btn-remove-file";
+    btnRemove.innerText = "Hapus";
+    btnRemove.onclick = function() {
+        wrapper.remove();
+    };
+    
+    wrapper.appendChild(input);
+    wrapper.appendChild(btnRemove);
+    container.appendChild(wrapper);
+}
+
+// ==========================
+// VALIDASI NIK
+// ==========================
+function validateNik(el) {
+    const warning = document.getElementById("nikWarning");
+    if (el.value.length > 0 && el.value.length < 16) {
+        warning.innerText = "⚠️ NIK harus 16 digit (saat ini " + el.value.length + " digit)";
+    } else {
+        warning.innerText = "";
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/chatbot.css">
+
+<div class="chat-container">
+
+    <div class="chat-header-modern">
+
+        <div class="chat-header-left">
+
+            <div class="chat-header-avatar">
+                🤖
+            </div>
+
+            <div class="chat-header-info">
+                <h3>Asisten AI Disdukcapil</h3>
+
+                <div class="chat-status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Online &bull; Aktif Melayani</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="chat-header-actions">
+
+            <button class="btn-header-action" onclick="resetChat()" id="btnResetChat">
+                🔄 Clear Chat
+            </button>
+
+            <a href="/layanan" class="btn-header-action">
+                📄 Jenis Layanan
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="chat-main-layout">
+
+        <div class="chat-messages-area-modern" id="chatMessagesArea">
+
+            <div class="message-bubble-wrapper bot" id="chatWelcomeMessage">
+
+                <div class="message-bubble-body">
+
+                    <div class="message-avatar-circle">
+                        🤖
+                    </div>
+
+                    <div class="message-content-box">
+
+                        <p>
+                            👋 Halo! Saya asisten virtual
+                            <strong>Disdukcapil Kota Tegal</strong>.
+                        </p>
+
+                        <p>
+                            Silakan pilih menu layanan berikut,
+                            atau ketik pertanyaan secara manual.
+                        </p>
+
+                        <div class="welcome-menu-list">
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('1')">
+                                <span class="menu-num">1</span>
+                                <span class="menu-text">KTP</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('2')">
+                                <span class="menu-num">2</span>
+                                <span class="menu-text">Kartu Keluarga</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('3')">
+                                <span class="menu-num">3</span>
+                                <span class="menu-text">KIA</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('4')">
+                                <span class="menu-num">4</span>
+                                <span class="menu-text">Akta Kelahiran</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('5')">
+                                <span class="menu-num">5</span>
+                                <span class="menu-text">Akta Kematian</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('6')">
+                                <span class="menu-num">6</span>
+                                <span class="menu-text">Pindah Datang</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('7')">
+                                <span class="menu-num">7</span>
+                                <span class="menu-text">Perkawinan / Perceraian</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('8')">
+                                <span class="menu-num">8</span>
+                                <span class="menu-text">Pengakuan / Pengesahan Anak</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('9')">
+                                <span class="menu-num">9</span>
+                                <span class="menu-text">Perubahan Nama</span>
+                            </div>
+
+                            <div class="welcome-menu-item" onclick="sendDirectQuery('10')">
+                                <span class="menu-num">10</span>
+                                <span class="menu-text">Dokumen Hilang / Rusak</span>
+                            </div>
+
+                        </div>
+
+                        <p>
+                            Ketik <strong>menu</strong> untuk melihat daftar layanan lagi.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="chat-suggestions-area-modern" id="chatSuggestionsArea">
+
+            <span class="suggestions-title-tag">
+                💡 Cepat:
+            </span>
+
+            <span class="suggestion-pill-modern" onclick="sendDirectQuery('menu')">
+                Menu
+            </span>
+
+            <span class="suggestion-pill-modern" onclick="sendDirectQuery('2')">
+                KK
+            </span>
+
+            <span class="suggestion-pill-modern" onclick="sendDirectQuery('1')">
+                KTP
+            </span>
+
+            <span class="suggestion-pill-modern" onclick="sendDirectQuery('2.1')">
+                Syarat KK Baru
+            </span>
+
+        </div>
+
+        <div class="chat-input-area-modern">
+
+            <div class="chat-input-wrapper-inner">
+
+                <input type="text" id="chatInputField" class="chat-text-input-field"
+                    placeholder="Ketik angka menu atau pertanyaan manual..." autocomplete="off">
+
+                <button onclick="handleSendClick()" class="chat-floating-send-btn" title="Kirim Pesan">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Modal Tutorial Cara Penggunaan -->
+<div id="chatbotTutorialModal" class="guide-modal-overlay">
+    <div class="guide-modal-card">
+        <div class="guide-modal-header">
+            <div class="guide-modal-icon">🤖</div>
+            <h3>Cara Menggunakan Chatbot</h3>
+        </div>
+        <div class="guide-modal-body">
+            <p class="guide-welcome-text">
+                Selamat datang di <strong>Asisten AI Disdukcapil Kota Tegal</strong>!
+                Chatbot ini siap membantu Anda mencari informasi layanan kependudukan.
+            </p>
+
+            <div class="guide-steps-list">
+
+                <div class="guide-step-item">
+                    <span class="guide-step-num">1</span>
+                    <div class="guide-step-content">
+                        <strong>Pilih Layanan via Menu Angka</strong>
+                        <p>Klik atau ketik angka <em>1–10</em> sesuai layanan yang diinginkan (KTP, KK, KIA, Akta Kelahiran, dll.) pada daftar menu di pesan awal.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step-item">
+                    <span class="guide-step-num">2</span>
+                    <div class="guide-step-content">
+                        <strong>Pilih Sub-Menu Layanan</strong>
+                        <p>Setelah memilih menu utama, ketik angka sub-menu untuk info lebih detail — misalnya ketik <em>1</em> lalu <em>2</em> untuk syarat cetak ulang KTP rusak.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step-item">
+                    <span class="guide-step-num">3</span>
+                    <div class="guide-step-content">
+                        <strong>Tanya Bebas dengan Bahasa Sendiri</strong>
+                        <p>Ketik pertanyaan langsung di kolom bawah, misalnya: <em>"syarat buat KTP hilang?"</em> atau <em>"prosedur pindah datang"</em>.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step-item">
+                    <span class="guide-step-num">4</span>
+                    <div class="guide-step-content">
+                        <strong>Gunakan Tombol Cepat &amp; Reset</strong>
+                        <p>Manfaatkan tombol pintasan <em>💡 Cepat</em> di bawah untuk akses instan, atau klik <em>🔄 Clear Chat</em> di atas untuk memulai percakapan baru.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="guide-tip-box">
+                <span class="guide-tip-icon">💬</span>
+                <span>Ketik <strong>menu</strong> atau <strong>0</strong> kapan saja untuk kembali ke daftar layanan utama.</span>
+            </div>
+        </div>
+        <div class="guide-modal-footer">
+            <button id="btnDismissTutorial" class="btn-guide-primary">✅ Mengerti, Mulai Chatting!</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/chatbot.js"></script>
+
+{% endblock %}

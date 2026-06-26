@@ -1,0 +1,98 @@
+/* CONTAINER */
+.admin-layanan-container{
+    padding: 40px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+/* HEADER */
+.edit-header{
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    padding: 30px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(37,99,235,0.2);
+}
+
+.edit-header h1{
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.edit-header p{
+    margin-top: 10px;
+    opacity: 0.9;
+    font-size: 15px;
+}
+
+/* CARD */
+.form-card{
+    background: white;
+    border-radius: 20px;
+    padding: 35px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    max-width: 850px;
+}
+
+/* TITLE */
+.form-card h1{
+    margin-bottom: 30px;
+    color: #1e293b;
+    font-size: 28px;
+}
+
+/* FORM */
+.form-group{
+    margin-bottom: 25px;
+}
+
+.form-group label{
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #334155;
+}
+
+/* INPUT */
+.form-group input,
+.form-group textarea{
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: 0.3s;
+    background: #fff;
+}
+
+/* FOCUS */
+.form-group input:focus,
+.form-group textarea:focus{
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+}
+
+/* TEXTAREA */
+.form-group textarea{
+    resize: vertical;
+}
+
+/* BUTTON */
+.btn-tambah{
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-tambah:hover{
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}

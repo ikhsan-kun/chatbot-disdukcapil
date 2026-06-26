@@ -1,0 +1,174 @@
+[
+{
+"question": "Apa saja persyaratan membuat KTP baru?",
+"answer": "Fotokopi Kartu Keluarga (KK)."
+},
+{
+"question": "Apa saja persyaratan cetak ulang KTP karena rusak?",
+"answer": "Fotokopi Kartu Keluarga (KK) dan membawa KTP-el yang rusak."
+},
+{
+"question": "Apa saja persyaratan cetak ulang KTP karena hilang?",
+"answer": "Fotokopi Kartu Keluarga (KK) dan Surat Keterangan Kehilangan dari Kepolisian."
+},
+{
+"question": "Bagaimana prosedur pembuatan KTP?",
+"answer": "Pemohon mengajukan berkas persyaratan, petugas menerima dan meneliti berkas, berkas diverifikasi oleh Kasi dan Kabid, operator melakukan perekaman biometrik pemohon, menunggu persetujuan pusat, kemudian KTP dicetak dan diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa persyaratan membuat Kartu Keluarga baru?",
+"answer": "Fotokopi dan menunjukkan Surat Nikah atau Akta Perkawinan yang dilegalisir, fotokopi Akta Kelahiran seluruh anggota keluarga, pas foto suami istri ukuran 3x4 sebanyak 2 lembar, serta surat pengantar dari kelurahan."
+},
+{
+"question": "Apa persyaratan perubahan Kartu Keluarga?",
+"answer": "Fotokopi dan menunjukkan Surat Nikah atau Akta Perkawinan, fotokopi Akta Kelahiran seluruh anggota keluarga, fotokopi Kartu Keluarga lama, serta surat pengantar dari kelurahan."
+},
+{
+"question": "Apa persyaratan percetakan KK karena hilang atau rusak?",
+"answer": "Fotokopi dan menunjukkan Surat Nikah atau Akta Perkawinan, fotokopi Akta Kelahiran anggota keluarga, Surat Keterangan Kehilangan dari Kepolisian jika hilang atau membawa KK rusak jika rusak, serta surat pengantar dari kelurahan."
+},
+{
+"question": "Bagaimana prosedur pembuatan Kartu Keluarga?",
+"answer": "Pemohon mengajukan berkas kepada petugas, petugas meneliti kelengkapan berkas, dilakukan verifikasi dan validasi data, Kepala Dinas menandatangani secara elektronik, Kartu Keluarga dicetak, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa persyaratan membuat KIA usia 0 sampai 5 tahun?",
+"answer": "Fotokopi Kartu Keluarga, fotokopi Akta Kelahiran, fotokopi KTP kedua orang tua, dan pas foto anak ukuran 2x3 latar merah sebanyak 2 lembar."
+},
+{
+"question": "Apa persyaratan membuat KIA usia 5 sampai 17 tahun?",
+"answer": "Fotokopi Kartu Keluarga, fotokopi Akta Kelahiran, fotokopi KTP kedua orang tua, dan pas foto anak ukuran 2x3 latar biru sebanyak 2 lembar."
+},
+{
+"question": "Bagaimana prosedur pembuatan KIA?",
+"answer": "Pemohon mengajukan berkas kepada petugas, petugas meneliti kelengkapan berkas, dilakukan verifikasi dan validasi data, operator melakukan perekaman data dan foto, KIA dicetak, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pembuatan Akta Kelahiran?",
+"answer": "Surat Keterangan Lahir dari dokter atau bidan, fotokopi Kartu Keluarga, fotokopi KTP kedua orang tua, fotokopi Buku Nikah atau Akta Perkawinan, surat pengantar dari kelurahan, dan dua orang saksi."
+},
+{
+"question": "Bagaimana prosedur pembuatan Akta Kelahiran?",
+"answer": "Pemohon mengajukan berkas kepada petugas, petugas meneliti kelengkapan berkas, dilakukan verifikasi dan validasi data, Kepala Dinas menandatangani dokumen, akta dicetak, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa persyaratan pindah datang antar daerah (SKDWNI)?",
+"answer": "Surat Keterangan Pindah dari daerah asal, KTP-el asli, dan Kartu Keluarga asli."
+},
+{
+"question": "Bagaimana prosedur pindah datang antar daerah?",
+"answer": "Pemohon mengajukan berkas persyaratan, petugas memverifikasi kelengkapan berkas, petugas menginput data SKDWNI, dilakukan verifikasi oleh pejabat terkait, pembubuhan tanda tangan elektronik oleh Kepala Dinas, kemudian Kartu Keluarga dan KTP dicetak dan diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa persyaratan membuat Surat Pindah ke Luar Negeri?",
+"answer": "Fotokopi Kartu Keluarga, KTP-el asli, paspor, surat keterangan bekerja atau sekolah dari negara tujuan jika ada, serta surat pengantar dari kelurahan."
+},
+{
+"question": "Bagaimana prosedur membuat Surat Pindah ke Luar Negeri?",
+"answer": "Pemohon mengajukan berkas, petugas memverifikasi, petugas menginput data SKPLN, dilakukan verifikasi pejabat terkait, pembubuhan tanda tangan elektronik oleh Kepala Dinas, dokumen dicetak, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa persyaratan pindah datang dari luar negeri?",
+"answer": "Paspor atau dokumen pengganti paspor, Surat Keterangan Kedatangan dari luar negeri, dokumen kependudukan dari negara asal jika ada, serta surat keterangan telah melapor ke instansi terkait."
+},
+{
+"question": "Bagaimana prosedur pindah datang dari luar negeri?",
+"answer": "Petugas melakukan verifikasi berkas, operator menginput biodata penduduk, dilakukan verifikasi dan validasi pejabat terkait, dokumen ditandatangani Kepala Dinas, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan kematian?",
+"answer": "Surat kematian dari dokter atau paramedik, surat keterangan kematian dari kelurahan jika meninggal di rumah, fotokopi KTP dan KK yang meninggal, fotokopi KTP pelapor, fotokopi KTP dua orang saksi, fotokopi akta kelahiran atau surat nikah, serta surat kuasa jika pelapor bukan keluarga."
+},
+{
+"question": "Bagaimana prosedur pencatatan kematian?",
+"answer": "Pemohon menyerahkan berkas kepada petugas, petugas meneliti dan memverifikasi berkas, petugas menginput data kematian, dilakukan verifikasi oleh Kasi dan Kabid, akta dicetak dan ditandatangani secara elektronik oleh Kepala Dinas, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan perkawinan?",
+"answer": "Surat keterangan nikah dari KUA bagi yang beragama Islam atau kutipan akta perkawinan dari Catatan Sipil bagi non Islam, fotokopi KTP dan KK kedua mempelai, fotokopi akta kelahiran kedua mempelai, pas foto suami istri ukuran 4x6 sebanyak 2 lembar, fotokopi KTP dua orang saksi, dan surat pengantar dari kelurahan."
+},
+{
+"question": "Bagaimana prosedur pencatatan perkawinan?",
+"answer": "Pemohon menyerahkan berkas permohonan, petugas meneliti dan memverifikasi berkas, petugas menginput data perkawinan, dilakukan verifikasi oleh pejabat terkait, akta dicetak dan ditandatangani secara elektronik oleh Kepala Dinas, kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan perceraian?",
+"answer": "Keputusan pengadilan yang telah mempunyai kekuatan hukum tetap tentang putusnya perkawinan, akta perkawinan yang bersangkutan, serta fotokopi KTP dan KK dengan menunjukkan aslinya."
+},
+{
+"question": "Bagaimana prosedur pencatatan perceraian?",
+"answer": "Pemohon mengajukan permohonan dan mengisi formulir, berkas diverifikasi oleh petugas, pemohon menandatangani register akta perceraian, dilakukan proses pencetakan akta untuk ditandatangani Kepala Dinas, kemudian akta perceraian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan pengakuan anak?",
+"answer": "Kutipan akta kelahiran anak, fotokopi KK dan KTP ibu kandung serta ayah biologis, fotokopi KTP dua orang saksi, serta surat pernyataan pengakuan anak dari ayah biologis yang disetujui ibu kandung."
+},
+{
+"question": "Bagaimana prosedur pencatatan pengakuan anak?",
+"answer": "Pemohon mengajukan berkas dan mengisi formulir, petugas memverifikasi berkas, petugas mencatat dalam register akta pengakuan anak dan melakukan perekaman data, berkas diajukan untuk ditandatangani Kepala Dinas, kemudian akta pengakuan anak diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan pengesahan anak?",
+"answer": "Kutipan akta kelahiran anak, fotokopi KK dan KTP kedua orang tua, fotokopi KTP dua orang saksi, penetapan pengadilan negeri bagi non Islam atau pengadilan agama bagi Islam, serta fotokopi akta perkawinan orang tua."
+},
+{
+"question": "Bagaimana prosedur pencatatan pengesahan anak?",
+"answer": "Pemohon mengajukan berkas permohonan, petugas memverifikasi dan memvalidasi berkas, petugas mencatat dalam register akta pengesahan anak, dokumen diajukan untuk ditandatangani Kepala Dinas, akta dicetak kemudian diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan pengangkatan anak?",
+"answer": "Salinan penetapan pengadilan tentang pengangkatan anak yang telah berkekuatan hukum tetap, kutipan akta kelahiran anak, fotokopi KK dan KTP orang tua angkat, fotokopi akta perkawinan orang tua angkat, serta fotokopi KTP dua orang saksi."
+},
+{
+"question": "Bagaimana prosedur pencatatan pengangkatan anak?",
+"answer": "Pemohon mengajukan berkas permohonan, petugas memverifikasi berkas, petugas mencatat dalam register akta pengangkatan anak, dokumen diajukan untuk ditandatangani Kepala Dinas, akta dicetak dan diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan pengakuan status kewarganegaraan?",
+"answer": "Fotokopi Kartu Keluarga, fotokopi KTP, fotokopi akta kelahiran, fotokopi surat nikah orang tua, surat penetapan pengadilan negeri tentang status kewarganegaraan, fotokopi KTP dua orang saksi, pas foto ukuran 4x6 sebanyak 2 lembar, serta surat pengantar dari kelurahan."
+},
+{
+"question": "Bagaimana prosedur pencatatan pengakuan status kewarganegaraan?",
+"answer": "Pemohon mengajukan berkas permohonan, petugas meneliti kelengkapan berkas, dilakukan verifikasi dan validasi data, petugas menginput data, dokumen ditandatangani secara elektronik oleh Kepala Dinas, kemudian dicetak dan diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan perubahan nama?",
+"answer": "Kutipan akta kelahiran dan dokumen pencatatan sipil lainnya, fotokopi KK dan KTP yang dilegalisir, serta salinan penetapan pengadilan atau keputusan dari kementerian terkait bagi perubahan nama keluarga."
+},
+{
+"question": "Bagaimana prosedur perubahan nama?",
+"answer": "Pemohon mengajukan permohonan dan mengisi formulir, petugas meneliti dan memvalidasi berkas, petugas membuat catatan pinggir pada register akta kelahiran, kemudian data perubahan nama direkam ke dalam database kependudukan."
+},
+
+{
+"question": "Apa saja persyaratan penerbitan kembali dokumen kependudukan karena hilang atau rusak?",
+"answer": "Surat keterangan kehilangan dari kepolisian jika hilang, dokumen yang rusak jika rusak, akta catatan sipil asli, materai, KTP pelapor dan fotokopi KK, penetapan pengadilan jika ada perubahan data, serta fotokopi KTP dua orang saksi."
+},
+{
+"question": "Bagaimana prosedur penerbitan kembali dokumen kependudukan?",
+"answer": "Pemohon mengisi formulir pelaporan dokumen hilang atau rusak, petugas memproses pencatatan penerbitan kembali dokumen, dokumen diajukan untuk ditandatangani Kepala Dinas, kemudian hasilnya diserahkan kepada pemohon."
+},
+
+{
+"question": "Apa saja persyaratan pencatatan peristiwa penting lainnya?",
+"answer": "Fotokopi penetapan pengadilan mengenai perubahan peristiwa penting lainnya yang telah dilegalisir serta kutipan akta pencatatan sipil yang berkaitan."
+},
+{
+"question": "Bagaimana prosedur pencatatan peristiwa penting lainnya?",
+"answer": "Pemohon menyerahkan berkas persyaratan, membayar sanksi keterlambatan jika ada, petugas memproses pencatatan pada buku pendaftaran dan membuat catatan pinggir pada register akta, kemudian dokumen diajukan untuk ditandatangani Kepala Dinas."
+}
+]

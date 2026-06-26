@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-hero">
+    <div class="container">
+        <h1>Riwayat Pengajuan</h1>
+        <p>Data seluruh pengajuan masyarakat</p>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- FILTER -->
+    <div class="filter-box">
+
+        <form method="GET" action="/admin/riwayat" class="filter-form">
+
+            <select name="bulan">
+                <option value="">Semua Bulan</option>
+
+                <option value="1" {% if bulan_selected == "1" %}selected{% endif %}>Januari</option>
+                <option value="2" {% if bulan_selected == "2" %}selected{% endif %}>Februari</option>
+                <option value="3" {% if bulan_selected == "3" %}selected{% endif %}>Maret</option>
+                <option value="4" {% if bulan_selected == "4" %}selected{% endif %}>April</option>
+                <option value="5" {% if bulan_selected == "5" %}selected{% endif %}>Mei</option>
+                <option value="6" {% if bulan_selected == "6" %}selected{% endif %}>Juni</option>
+                <option value="7" {% if bulan_selected == "7" %}selected{% endif %}>Juli</option>
+                <option value="8" {% if bulan_selected == "8" %}selected{% endif %}>Agustus</option>
+                <option value="9" {% if bulan_selected == "9" %}selected{% endif %}>September</option>
+                <option value="10" {% if bulan_selected == "10" %}selected{% endif %}>Oktober</option>
+                <option value="11" {% if bulan_selected == "11" %}selected{% endif %}>November</option>
+                <option value="12" {% if bulan_selected == "12" %}selected{% endif %}>Desember</option>
+            </select>
+
+            <input
+                type="text"
+                name="tahun"
+                placeholder="Tahun"
+                value="{{ tahun_selected if tahun_selected else '' }}"
+            >
+
+            <button type="submit" class="btn-filter">
+                Filter
+            </button>
+
+        </form>
+
+<a href="/admin/laporan{% if bulan_selected or tahun_selected %}?{% endif %}{% if bulan_selected %}bulan={{ bulan_selected }}{% endif %}{% if bulan_selected and tahun_selected %}&{% endif %}{% if tahun_selected %}tahun={{ tahun_selected }}{% endif %}" target="_blank" class="btn-cetak">
+    🖨 Cetak Laporan
+</a>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+
+        <table class="admin-table">
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIK</th>
+                    <th>Jenis Layanan</th>
+                    <th>Status</th>
+                    <th>Tanggal</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in pengajuan %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>{{ item.nik }}</td>
+
+                    <td>
+                        {{ item.jenis_layanan }}
+
+                        {% if item.detail_pengajuan %}
+                            <br>
+                            <small>{{ item.detail_pengajuan }}</small>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if item.status == "Menunggu Verifikasi" %}
+                            <span class="status pending">
+                                {{ item.status }}
+                            </span>
+
+                        {% elif item.status == "Disetujui" %}
+                            <span class="status approved">
+                                {{ item.status }}
+                            </span>
+
+                        {% else %}
+                            <span class="status rejected">
+                                {{ item.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ item.tanggal_pengajuan }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

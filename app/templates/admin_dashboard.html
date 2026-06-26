@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-hero">
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p>Kelola pengajuan layanan masyarakat</p>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- SUMMARY -->
+    <div class="summary-container">
+
+    <div class="card total">
+        <h3>{{ total }}</h3>
+        <p>Total</p>
+    </div>
+
+    <div class="card menunggu">
+        <h3>{{ menunggu }}</h3>
+        <p>Menunggu</p>
+    </div>
+
+    <div class="card diproses">
+        <h3>{{ diproses }}</h3>
+        <p>Diproses</p>
+    </div>
+
+    <div class="card disetujui">
+        <h3>{{ disetujui }}</h3>
+        <p>Disetujui</p>
+    </div>
+
+    <div class="card ditolak">
+        <h3>{{ ditolak }}</h3>
+        <p>Ditolak</p>
+    </div>
+
+    <div class="card selesai">
+        <h3>{{ selesai }}</h3>
+        <p>Selesai</p>
+    </div>
+
+</div>
+
+<!-- CHART -->
+<div class="chart-container">
+    <div class="chart-box">
+        <h3>Pengajuan per Layanan</h3>
+        <canvas id="chartLayanan"></canvas>
+    </div>
+
+    <div class="chart-box pie-chart-box">
+        <h3>Distribusi Status</h3>
+        <canvas id="chartStatus"></canvas>
+    </div>
+</div>
+
+    <!-- MODAL PROSES -->
+<div id="modalProses" class="modal">
+    <div class="modal-content">
+
+        <span class="close" onclick="closeProsesModal()">✖</span>
+
+        <h2>Proses Pengajuan</h2>
+
+        <form id="formProses" method="POST" enctype="multipart/form-data">
+
+            <label>Status</label>
+            <select name="status" required>
+                <option value="Diproses">⏳ Diproses</option>
+                <option value="Disetujui">✅ Disetujui</option>
+                <option value="Ditolak">❌ Ditolak</option>
+                <option value="Selesai">🏁 Selesai</option>
+            </select>
+
+            <label>Catatan</label>
+            <textarea name="catatan"></textarea>
+
+            <label>Upload File Balasan</label>
+            <input type="file" name="file_admin">
+
+            <button type="submit" class="btn-submit">Simpan</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const layananLabels = JSON.parse('{{ layanan_labels | tojson | safe }}');
+const layananData = JSON.parse('{{ layanan_values | tojson | safe }}');
+
+const statusLabels = JSON.parse('{{ status_labels | tojson | safe }}');
+const statusData = JSON.parse('{{ status_values | tojson | safe }}');
+
+// ===== CHART LAYANAN =====
+const ctx1 = document.getElementById('chartLayanan');
+
+if (ctx1) {
+
+    new Chart(ctx1, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: layananLabels,
+
+            datasets: [{
+
+                label: 'Jumlah Pengajuan',
+
+                data: layananData,
+
+                backgroundColor: [
+                    '#4f8cff',
+                    '#28a745',
+                    '#ff9800',
+                    '#e53935'
+                ],
+
+                borderRadius: 10,
+
+                barThickness: 45
+
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                   ticks: {
+
+    color: '#333',
+
+    autoSkip: false,
+
+    maxRotation: 0,
+    minRotation: 0,
+
+    font: {
+        size: 11
+    },
+
+    callback: function(value) {
+
+        let label = this.getLabelForValue(value);
+
+        // otomatis pecah per kata
+        return label.split(" ");
+    }
+
+},
+                    grid: {
+                        display: false
+                    }
+
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+                        stepSize: 1
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+}
+
+// ===== CHART STATUS =====
+const ctx2 = document.getElementById('chartStatus');
+
+if (ctx2) {
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusData,
+                backgroundColor: [
+                '#fcd34d', // kuning soft - menunggu
+                '#93c5fd', // biru soft - diproses
+                '#6ee7b7', // hijau soft - disetujui
+                '#fca5a5', // merah soft - ditolak
+                '#a78bfa'  // ungu soft - selesai
+                ],
+            }]
+        }
+    });
+}
+</script>
+
+{% endblock %}

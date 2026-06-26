@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/admin_layanan.css">
+
+<div class="admin-layanan-container">
+
+    <!-- HEADER -->
+    <div class="header-layanan">
+
+        <div class="header-text">
+            <h1>Manajemen Layanan</h1>
+            <p>Kelola seluruh jenis layanan Disdukcapil Kota Tegal</p>
+        </div>
+
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="layanan-action-bar">
+
+        <a href="/admin/layanan/tambah" class="btn-tambah">
+            + Tambah Layanan
+        </a>
+
+    </div>
+
+    <!-- TABEL -->
+    <div class="table-container">
+
+        <table class="layanan-table">
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Layanan</th>
+                    <th>Waktu</th>
+                    <th>Persyaratan Pelayanan</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in layanan %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>
+                        <strong>{{ item['judul'] }}</strong>
+                    </td>
+
+                    <td>
+                        <span class="badge-waktu">
+                            {{ item['waktu_proses'] }}
+                        </span>
+                    </td>
+
+                    <td class="deskripsi-list">
+                        {{ item['deskripsi'].replace(';', ';\n') }}
+                    </td>
+
+                    <td>
+
+                        <div class="action" style="margin-top: 0; display: flex; flex-direction: column; gap: 8px; width: 100%; min-width: 140px;">
+
+
+                            <a
+                                href="/admin/layanan/edit/{{ item['id'] }}"
+                                class="btn-edit"
+                                style="text-align: center; margin: 0;"
+                            >
+                                Edit
+                            </a>
+
+                            <button
+                                type="button"
+                                class="btn-hapus"
+                                onclick="openDeleteModal('{{ item.id }}')"
+                                style="text-align: center; margin: 0;"
+                            >
+                                Hapus
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- MODAL DELETE -->
+<div id="deleteModal" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <h3>Konfirmasi Hapus</h3>
+
+        <p>
+            Apakah Anda yakin ingin menghapus layanan ini?
+        </p>
+
+        <div class="modal-actions">
+
+            <a
+                id="confirmDeleteBtn"
+                href="#"
+                class="btn-danger"
+            >
+                Ya, Hapus
+            </a>
+
+            <button
+                type="button"
+                class="btn-secondary"
+                onclick="closeDeleteModal()"
+            >
+                Batal
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function openDeleteModal(id)
+{
+    document.getElementById("deleteModal").style.display = "flex";
+
+    document.getElementById("confirmDeleteBtn").href =
+        "/admin/layanan/hapus/" + id;
+}
+
+function closeDeleteModal()
+{
+    document.getElementById("deleteModal").style.display = "none";
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-hero">
+    <div class="container">
+        <h1>Pengajuan Masuk</h1>
+        <p>Daftar seluruh pengajuan dari masyarakat</p>
+    </div>
+</section>
+
+<div class="container">
+
+    <div class="filter-box">
+
+<form method="GET" action="/admin/pengajuan" class="filter-form">
+
+    <!-- SEARCH NIK -->
+    <div class="search-box">
+
+        <input type="text"
+               name="nik"
+               placeholder="Cari berdasarkan NIK..."
+               value="{{ nik_selected if nik_selected else '' }}">
+
+    </div>
+
+    <!-- FILTER STATUS -->
+    <select name="status">
+
+        <option value="Semua">Semua Status</option>
+
+        <option value="Menunggu Verifikasi"
+            {% if selected_status == "Menunggu Verifikasi" %}selected{% endif %}>
+            Menunggu Verifikasi
+        </option>
+
+        <option value="Diproses"
+            {% if selected_status == "Diproses" %}selected{% endif %}>
+            Diproses
+        </option>
+
+        <option value="Disetujui"
+            {% if selected_status == "Disetujui" %}selected{% endif %}>
+            Disetujui
+        </option>
+
+        <option value="Ditolak"
+            {% if selected_status == "Ditolak" %}selected{% endif %}>
+            Ditolak
+        </option>
+
+        <option value="Selesai"
+            {% if selected_status == "Selesai" %}selected{% endif %}>
+            Selesai
+        </option>
+
+    </select>
+
+    <button type="submit" class="btn-filter">
+        Cari
+    </button>
+
+</form>
+
+</div>
+
+<div class="table-container">
+
+<table class="admin-table">
+
+    <thead>
+        <tr>
+            <th>NIK</th>
+            <th>Layanan</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for item in pengajuan %}
+
+        <tr>
+
+            <td>{{ item.nik }}</td>
+
+            <td class="layanan">
+                {{ item.jenis_layanan }}
+            </td>
+
+            <td class="tanggal">
+                {{ item.tanggal_pengajuan }}
+            </td>
+
+            <td>
+                <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">
+                    {{ item.status }}
+                </span>
+            </td>
+
+            <td class="aksi">
+
+                <a href="/admin/detail/{{ item.id }}"
+                   class="btn-detail">
+                   👁
+                </a>
+
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+    .syarat-box h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--neutral-700);
+        margin-bottom: 10px;
+    }
+
+    .syarat-box p {
+        font-size: 13px;
+        color: var(--neutral-600);
+        line-height: 1.6;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .syarat-box p::before {
+        content: "•";
+        color: var(--primary);
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="layanan-container">
+
+    <h1 class="layanan-title">
+        Jenis Layanan Disdukcapil
+    </h1>
+
+    <div class="layanan-grid">
+
+        {% for item in layanan %}
+
+        <div class="layanan-card">
+
+            <div class="layanan-icon">
+                {% if item['judul'] == "Cetak Ulang KK" %}
+                    🖨️
+                {% elif item['judul'] == "Perubahan Status Pendidikan" %}
+                    🎓
+                {% else %}
+                    📄
+                {% endif %}
+            </div>
+
+            <h2>{{ item['judul'] }}</h2>
+
+            <div class="layanan-waktu">
+                ⏱ {{ item['waktu_proses'] }}
+            </div>
+
+            <div class="syarat-box">
+                <h4>Persyaratan:</h4>
+                {% for syarat in item['deskripsi'].splitlines() %}
+                    {% if syarat.strip() %}
+                        <p>{{ syarat }}</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- BUTTON AJUKAN -->
+            <div class="layanan-action" style="margin-top: auto; width: 100%; padding-top: 16px;">
+
+                {% if item['judul'] == "Cetak Ulang KK" %}
+                    <a href="/pengajuan" class="btn-ajukan" style="display: block; text-align: center;">
+                        Ajukan Layanan
+                    </a>
+
+                {% elif item['judul'] == "Perubahan Status Pendidikan" %}
+                    <a href="/pengajuan" class="btn-ajukan" style="display: block; text-align: center;">
+                        Ajukan Layanan
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

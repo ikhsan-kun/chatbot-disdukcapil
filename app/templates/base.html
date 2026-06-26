@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disdukcapil Kota Tegal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="nav-left">
+    <img src="/static/images/logo.png" alt="Logo Disdukcapil" class="logo-img">
+</div>
+        </div>
+
+        <ul class="nav-menu">
+
+    {% if user and user.role == "admin" %}
+
+    <!-- MENU ADMIN -->
+
+    <li>
+        <a href="/admin"
+           class="{% if request.url.path == '/admin' %}active{% endif %}">
+           Dashboard
+        </a>
+    </li>
+
+    <li>
+        <a href="/admin/pengajuan"
+           class="{% if request.url.path == '/admin/pengajuan' %}active{% endif %}">
+           Pengajuan Masuk
+        </a>
+    </li>
+    
+        <li>
+            <a href="/admin/riwayat"
+            class="{% if request.url.path == '/admin/riwayat' %}active{% endif %}">
+            Laporan
+            </a>
+        </li>
+
+    <li>
+        <a href="/admin/layanan"
+        class="{% if request.url.path == '/admin/layanan' %}active{% endif %}">
+        Jenis Layanan
+        </a>
+    </li>
+
+    {% else %}
+
+    <!-- MENU USER -->
+
+    <li>
+        <a href="/"
+           class="{% if request.url.path == '/' %}active{% endif %}">
+           Beranda
+        </a>
+    </li>
+
+    <li>
+        <a href="/chatbot"
+           class="{% if request.url.path == '/chatbot' %}active{% endif %}">
+           Chatbot
+        </a>
+    </li>
+
+    <li>
+        <a href="/layanan"
+           class="{% if request.url.path == '/layanan' %}active{% endif %}">
+           Jenis Layanan
+        </a>
+    </li>
+
+    <li>
+        <a href="/pengajuan"
+           class="{% if request.url.path == '/pengajuan' %}active{% endif %}">
+           Pengajuan
+        </a>
+    </li>
+
+    {% endif %}
+
+</ul>
+
+        <div class="nav-right">
+
+    {% if user %}
+<div class="nav-right">
+
+    <div class="user-menu">
+        <button class="user-btn" onclick="toggleDropdown()">
+            👤 {{ user.nama }}
+        </button>
+
+        <div id="dropdownMenu" class="dropdown-menu">
+            <a href="/dashboard">📊 Dashboard Saya</a>
+            <a href="/logout" class="logout">🚪 Keluar</a>
+        </div>
+    </div>
+
+</div>
+
+    {% else %}
+    <a href="/login" class="btn-login">Login</a>
+    {% endif %}
+
+</div>
+
+
+        <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+    <div class="footer-container">
+
+        <!-- Kolom 1 -->
+        <div class="footer-col">
+            <div class="footer-logo">
+                <div class="logo-icon">D</div>
+                <div>
+                    <h3>Disdukcapil</h3>
+                    <span>Kota Tegal</span>
+                </div>
+            </div>
+            <p>
+                Dinas Kependudukan dan Pencatatan Sipil Kota Tegal 
+                melayani masyarakat dalam urusan administrasi kependudukan.
+            </p>
+        </div>
+
+        <!-- Kolom 2 -->
+        <div class="footer-col">
+            <h3>Kontak Kami</h3>
+            <p>📍 Jl. Ki Gede Sebayu No.12, Panggung,<br>
+            Kec. Tegal Timur, Kota Tegal,<br>
+            Jawa Tengah 52124</p>
+
+            <p>📞 (0283) 355933</p>
+            <p>✉️ disdukcapil@tegalkota.go.id</p>
+        </div>
+
+        <!-- Kolom 3 -->
+        <div class="footer-col">
+            <h3>Jam Operasional</h3>
+            <p>🕒 Senin – Kamis: 08.00 – 15.00 WIB</p>
+            <p>Jumat: 08.00 – 11.00 WIB</p>
+            <p>Sabtu – Minggu: Tutup</p>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 Dinas Kependudukan dan Pencatatan Sipil Kota Tegal. 
+        Hak Cipta Dilindungi.
+    </div>
+</footer>
+
+<script src="/static/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

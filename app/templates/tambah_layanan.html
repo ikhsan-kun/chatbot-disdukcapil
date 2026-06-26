@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/tambah_layanan.css">
+
+<div class="tambah-container">
+
+    <div class="tambah-card">
+
+        <h1>Form Layanan Baru</h1>
+
+        <form method="post" action="/admin/layanan/tambah">
+
+            <div class="form-group">
+                <label>Nama Layanan</label>
+                <input type="text" name="judul" required>
+            </div>
+
+            <div class="form-group">
+                <label>Waktu Proses</label>
+                <input type="text" name="waktu_proses">
+            </div>
+
+            <div class="form-group">
+                <label>Persyaratan Pelayanan</label>
+                <textarea name="deskripsi" rows="6"></textarea>
+            </div>
+
+            <div class="button-group">
+
+                <button type="submit" class="btn-simpan">
+                    Simpan
+                </button>
+
+                <a href="/admin/layanan" class="btn-batal">
+                    Batal
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

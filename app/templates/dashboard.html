@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HERO -->
+<section class="dashboard-hero">
+    <h1>Dashboard Saya</h1>
+    <p>Kelola profil dan pantau pengajuan Anda</p>
+</section>
+
+<!-- CONTENT -->
+<section class="dashboard-container">
+
+    <!-- PROFIL -->
+<div class="profile-card">
+
+    <div class="profile-left">
+
+        <!-- FOTO PROFILE -->
+        <div class="avatar">
+
+            {% if user.foto_profile %}
+                <img src="/static/uploads/{{ user.foto_profile }}"
+                     class="avatar-img">
+            {% else %}
+                👤
+            {% endif %}
+
+        </div>
+
+        <!-- INFO USER -->
+        <div class="profile-info">
+            <h3>{{ user.nama }}</h3>
+            <p>{{ user.email }}</p>
+        </div>
+
+    </div>
+
+    <!-- BUTTON EDIT -->
+    <a href="/edit-profile" class="btn-edit">
+        ✏️ Edit Profil
+    </a>
+
+</div>
+
+    <!-- RIWAYAT HEADER -->
+    <div class="riwayat-header">
+        <h2>Riwayat Pengajuan</h2>
+        <a href="/pengajuan" class="btn-ajukan">Ajukan Baru</a>
+    </div>
+
+{% if pengajuan and pengajuan|length > 0 %}
+
+<div class="pengajuan-wrapper">
+
+    {% for item in pengajuan %}
+    <div class="pengajuan-card">
+
+    <!-- KIRI -->
+    <div class="card-left">
+        <div class="judul-riwayat">
+            📄 <span>{{ item.jenis_layanan }}</span>
+        </div>
+
+<div class="meta">
+    <span class="meta-item nik">🆔 {{ item.nik }}</span>
+    <span class="meta-item tanggal">📅 {{ item.tanggal_pengajuan }}</span>
+</div>
+    </div>
+
+    <!-- KANAN -->
+    <div class="card-right">
+        <span class="status status-{{ item.status|lower|replace(' ', '-') }}">
+            {{ item.status }}
+        </span>
+
+<button
+    class="btn-detail"
+    data-item='{{ item | tojson | safe }}'
+    onclick="openDetail(this)"
+>
+    👁 Detail
+</button>
+    </div>
+
+</div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="riwayat-box">
+    <div class="empty-icon">📁</div>
+    <p>Belum ada riwayat pengajuan layanan.</p>
+</div>
+
+{% endif %}
+
+</section>
+
+<!-- <div class="pengajuan-wrapper">
+
+    {% for item in pengajuan %}
+    <div class="pengajuan-card">
+
+        <div class="card-left">
+            <h3>{{ item.jenis_layanan }}</h3>
+            <p>NIK: {{ item.nik }}</p>
+            <p>Tanggal: {{ item.tanggal_pengajuan }}</p>
+
+            <button class="btn-detail"
+                onclick="openDetail(
+                    '{{ item.jenis_layanan }}',
+                    '{{ item.nik }}',
+                    '{{ user.nama }}',
+                    '{{ item.tanggal_pengajuan }}',
+                    '{{ item.status }}'
+                )">
+                👁 Lihat Detail
+            </button>
+        </div>
+
+        <div class="card-right">
+            <span class="status status-{{ item.status|lower|replace(' ', '-') }}">
+                {{ item.status }}
+            </span>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div> -->
+
+<div id="modalDetail" class="modal">
+    <div class="modal-content">
+
+        <!-- HEADER (TIDAK SCROLL) -->
+        <div class="modal-header">
+            <span class="close" onclick="closeDetail()">✖</span>
+            <h2>Detail Pengajuan</h2>
+            <div class="status-box" id="modalStatus"></div>
+        </div>
+
+        <!-- BODY (YANG SCROLL) -->
+<div class="modal-body">
+
+    <!-- DETAIL -->
+    <div class="detail-grid">
+
+        <div>
+    <label>Nama</label>
+    <p id="dNamaLengkap"></p>
+</div>
+
+<div id="boxPendidikanLama">
+    <label>Pendidikan Lama</label>
+    <p id="dPendidikanLama"></p>
+</div>
+
+        <div>
+            <label>Layanan</label>
+            <p id="dLayanan"></p>
+        </div>
+<div id="boxDetailPengajuan">
+    <label id="labelDetailPengajuan">Detail Pengajuan</label>
+    <p id="dDetailPengajuan"></p>
+</div>
+
+        <div>
+            <label>NIK</label>
+            <p id="dNik"></p>
+        </div>
+
+        <div>
+            <label>Tanggal</label>
+            <p id="dTanggal"></p>
+        </div>
+
+    </div>
+
+    <!-- DETAIL KARTU KELUARGA (KK) -->
+    <div id="boxKkDetails" style="display: none; margin-top: 20px; border-top: 1px solid var(--neutral-200); padding-top: 16px;">
+        <h4 style="margin-bottom: 12px; font-size: 15px; font-weight: 700; color: var(--neutral-800);">📍 Detail Alamat & Data KK</h4>
+        <div class="detail-grid">
+            <div>
+                <label>Nomor KK</label>
+                <p id="dNoKk"></p>
+            </div>
+            <div>
+                <label>Nama Jalan / Blok / No. Rumah</label>
+                <p id="dAlamat"></p>
+            </div>
+            <div>
+                <label>Provinsi</label>
+                <p id="dProvinsi"></p>
+            </div>
+            <div>
+                <label>Kabupaten / Kota</label>
+                <p id="dKabupaten"></p>
+            </div>
+            <div>
+                <label>Kecamatan</label>
+                <p id="dKecamatan"></p>
+            </div>
+            <div>
+                <label>Desa / Kelurahan</label>
+                <p id="dDesa"></p>
+            </div>
+        </div>
+    </div>
+
+<!-- DOKUMEN USER -->
+<div class="preview-box" id="boxUser">
+
+    <h4>📎 Dokumen Anda</h4>
+
+    <div id="dokumenUserList"></div>
+
+</div>
+
+    <!-- CATATAN USER -->
+    <div class="catatan-box">
+
+        <h4>📝 Catatan Anda</h4>
+
+        <p id="catatanUser"></p>
+
+    </div>
+
+    
+<!-- CATATAN ADMIN -->
+<div class="catatan-box" id="boxCatatan">
+
+    <h4>📌 Balasan Admin</h4>
+
+    <p id="catatanAdmin"></p>
+
+</div>
+
+<!-- FILE BALASAN ADMIN -->
+<div class="preview-box" id="boxAdmin" style="display:block;">
+
+    <h4>📎 Hasil dari Admin</h4>
+
+    <a id="linkAdmin"
+       href="#"
+       target="_blank"
+       class="file-btn">
+       📄 Lihat Dokumen
+    </a>
+
+</div>
+
+    <!-- INFO -->
+    <div class="info-box" id="infoStatus">
+        Pengajuan Anda sedang dalam proses verifikasi.
+    </div>
+
+</div>
+
+    </div>
+</div>
+
+{% endblock %}

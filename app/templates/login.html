@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="login-section">
+
+    <div class="login-card">
+
+        <div class="login-icon">
+            ➜
+        </div>
+
+        <h2>Masuk</h2>
+
+        <p class="login-subtitle">
+            Masuk ke akun Disdukcapil Anda
+        </p>
+
+        <form method="POST" action="/login">
+
+            <!-- NIK -->
+            <label for="nik">NIK</label>
+
+            <input
+                type="text"
+                id="nik"
+                name="nik"
+                placeholder="Masukkan 16 digit NIK"
+                maxlength="16"
+                required
+                oninput="this.value=this.value.replace(/\D/g,'').slice(0,16);"
+            >
+
+            <small id="nikWarning"
+                   class="warning-text">
+            </small>
+
+<!-- PASSWORD -->
+<label for="password">Password</label>
+
+<div class="password-box">
+
+    <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Masukkan password"
+        required
+    >
+
+    <span class="show-password" onclick="togglePassword()" id="eyeIcon">
+        <!-- EYE OPEN -->
+        <svg id="iconShow" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <!-- EYE SLASH -->
+        <svg id="iconHide" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+    </span>
+
+</div>
+
+<small id="passwordWarning" class="warning-text"></small>
+
+            <!-- BUTTON -->
+            <button type="submit"
+                    class="btn-login">
+                Masuk
+            </button>
+
+        </form>
+
+        <p class="register-link">
+            Belum punya akun?
+            <a href="/register">
+                Daftar sekarang
+            </a>
+        </p>
+
+    </div>
+
+</section>
+
+<!-- JAVASCRIPT -->
+<script>
+
+// ==========================
+// SHOW PASSWORD
+// ==========================
+function togglePassword() {
+
+    const password =
+        document.getElementById("password");
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+    } else {
+
+        password.type = "password";
+
+    }
+}
+
+// ==========================
+// VALIDASI NIK
+// ==========================
+const nikInput =
+    document.getElementById("nik");
+
+nikInput.addEventListener("input", function () {
+
+    // hanya angka, max 16
+    this.value =
+        this.value.replace(/\D/g, '').slice(0, 16);
+
+    const warning =
+        document.getElementById("nikWarning");
+
+    if (this.value.length > 0 && this.value.length < 16) {
+
+        warning.innerText =
+            "⚠️ NIK harus 16 digit (saat ini " + this.value.length + " digit)";
+
+    } else {
+
+        warning.innerText = "";
+
+    }
+
+});
+
+// ==========================
+// VALIDASI PASSWORD
+// ==========================
+const passwordInput =
+    document.getElementById("password");
+
+passwordInput.addEventListener("input", function () {
+
+    const warning =
+        document.getElementById("passwordWarning");
+
+    if (this.value.length < 6) {
+
+        warning.innerText =
+            "Password minimal 6 karakter";
+
+    } else {
+
+        warning.innerText = "";
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

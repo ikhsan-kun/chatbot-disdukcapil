@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="login-required-section">
+    <div class="login-required-box">
+        <div class="icon-lock">🔒</div>
+        <h2>Akses Terbatas</h2>
+        <p>
+            Untuk mengajukan layanan administrasi kependudukan,
+            silakan masuk terlebih dahulu atau buat akun baru.
+        </p>
+
+        <div class="login-buttons">
+            <a href="/login" class="btn-primary">Masuk</a>
+            <a href="/register" class="btn-outline-blue">Daftar Akun</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

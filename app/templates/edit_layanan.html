@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/edit_layanan.css">
+
+<div class="admin-layanan-container">
+
+    <div class="edit-header">
+
+    <h1>Edit Layanan</h1>
+
+    <p>
+        Perbarui informasi layanan Disdukcapil
+    </p>
+
+</div>
+
+    <div class="form-card">
+
+        <h1>Edit Layanan</h1>
+
+        <form method="post" action="/admin/layanan/update/{{ layanan['id'] }}">
+
+            <div class="form-group">
+                <label>Nama Layanan</label>
+
+                <input
+                    type="text"
+                    name="judul"
+                    value="{{ layanan['judul'] }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Waktu Proses</label>
+
+                <input
+                    type="text"
+                    name="waktu_proses"
+                    value="{{ layanan['waktu_proses'] }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Deskripsi</label>
+
+                <textarea
+                    name="deskripsi"
+                    rows="5"
+                    required
+                >{{ layanan['deskripsi'] }}</textarea>
+            </div>
+
+            <button type="submit" class="btn-tambah">
+                Simpan Perubahan
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

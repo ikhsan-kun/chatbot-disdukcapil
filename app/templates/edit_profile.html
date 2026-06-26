@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="form-container">
+    <h2>Edit Profil</h2>
+
+<form method="POST" action="/edit-profile" enctype="multipart/form-data">
+
+    <label>Nama</label>
+    <input type="text" name="nama" value="{{ user.nama }}" required>
+
+    <label>Email</label>
+    <input type="email" name="email" value="{{ user.email }}" required>
+
+    <!-- FOTO PROFILE -->
+    <label>Foto Profile</label>
+    <input type="file" name="foto_profile">
+
+    <!-- BUTTON -->
+    <div class="form-actions">
+
+        <a href="/dashboard" class="btn-batal">
+            ❌ Batal
+        </a>
+
+        <button type="submit" class="btn-submit">
+            💾 Simpan Perubahan
+        </button>
+
+    </div>
+
+</form>
+</div>
+
+{% endblock %}

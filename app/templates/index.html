@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-badge">Layanan Resmi Pemerintah Kota Tegal</div>
+
+    <h1>
+        Dinas Kependudukan dan <br>
+        Pencatatan Sipil <br>
+        <span>Kota Tegal</span>
+    </h1>
+
+    <p>
+        Melayani masyarakat Kota Tegal dalam urusan administrasi kependudukan
+        dengan cepat, mudah, dan transparan.
+    </p>
+
+   <div class="hero-buttons">
+    <a href="/chatbot" class="btn-yellow">Tanya Chatbot</a>
+    <a href="/pengajuan" class="btn-lihat">Ajukan Layanan →</a>
+</div>
+
+<div class="hero-chat-preview">
+
+    <div class="chat-bubble bot">
+        Halo 👋 Ada yang bisa saya bantu?
+    </div>
+
+    <div class="chat-bubble user">
+        Syarat bikin KK apa ya?
+    </div>
+
+    <div class="chat-bubble bot">
+        Siapkan KTP, surat RT/RW, dan formulir ya 😊
+    </div>
+
+</div>
+
+    <div class="wave"></div>
+</section>
+
+<section class="stats">
+
+<div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-text">
+        <h3>50,000+</h3>
+        <p>Warga Terlayani</p>
+    </div>
+</div>
+
+<div class="stat-card">
+    <div class="stat-icon">📄</div>
+    <div class="stat-text">
+        <h3>10,000+</h3>
+        <p>Dokumen Terbit</p>
+    </div>
+</div>
+
+<div class="stat-card">
+    <div class="stat-icon">📅</div>
+    <div class="stat-text">
+        <h3>5-5</h3>
+        <p>Hari Kerja</p>
+    </div>
+</div>
+
+<div class="stat-card">  
+    <div class="stat-icon">🛡️</div>
+    <div class="stat-text">
+        <h3>100%</h3>
+        <p>Aman & Resmi</p>
+    </div>
+</div>
+
+</section>
+
+<section id="layanan" class="layanan-section">
+    <div class="container">
+        <h2 class="judul-layanan">Layanan Kami</h2>
+        <p class="sub-layanan">
+            Berbagai layanan administrasi kependudukan yang tersedia untuk masyarakat Kota Tegal
+        </p>
+
+        <div class="card-wrapper">
+
+    <div class="card">
+        <div class="icon-box">🖨️</div>
+        <h3>Percetakan Ulang Kartu Keluarga</h3>
+        <p>Layanan untuk mencetak ulang KK yang hilang atau rusak.</p>
+    </div>
+
+    <div class="card">
+        <div class="icon-box">🎓</div>
+        <h3>Perubahan Pendidikan</h3>
+        <p>Memperbarui data pendidikan terakhir pada dokumen.</p>
+    </div>
+
+    <div class="card">
+        <div class="icon-box">📝</div>
+        <h3>Pencatatan Perubahan Nama</h3>
+        <p>Layanan pencatatan perubahan nama pada dokumen kependudukan.</p>
+    </div>
+
+  <div class="card">
+    <div class="icon-box">👶</div>
+    <h3>Pembuatan Akta Kelahiran</h3>
+    <p>Layanan informasi persyaratan akta kelahiran bagi masyarakat.</p>
+</div>
+
+<div class="card">
+    <div class="icon-box">🕊️</div>
+    <h3>Pembuatan Akta Kematian</h3>
+    <p>Layanan informasi administrasi akta kematian penduduk.</p>
+</div>
+
+<div class="card">
+    <div class="icon-box">🪪</div>
+    <h3>Kartu Identitas Anak</h3>
+    <p>Layanan informasi pembuatan Kartu Identitas Anak (KIA).</p>
+</div>
+</div>
+        <div class="btn-center">
+            <a href="/layanan" class="btn-lihat">Lihat Semua Layanan →</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ======================= -->
+<!-- SECTION BUTUH BANTUAN  -->
+<!-- ======================= -->
+
+<section class="hero-help">
+    <div class="hero-content">
+        
+        <div class="hero-icon">💬</div>
+
+        <h1>Butuh Bantuan?</h1>
+
+        <p>
+            Tanyakan langsung ke chatbot kami untuk informasi persyaratan layanan 
+            dan prosedur pengajuan.
+        </p>
+
+        <a href="/chatbot" class="hero-button">
+            Mulai Chat Sekarang →
+        </a>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Pengajuan</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            padding: 40px;
+        }
+
+        /* =========================
+           KOP LAPORAN
+        ========================== */
+        .kop-laporan{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+
+            border-bottom: 3px solid black;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo-kota{
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+
+        .kop-text{
+            text-align: center;
+        }
+
+        .kop-text h2{
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .kop-text h3{
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .kop-text p{
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* =========================
+           JUDUL
+        ========================== */
+        .judul-laporan{
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .judul-laporan h1{
+            margin: 0;
+            font-size: 28px;
+        }
+
+        /* =========================
+           FILTER INFO
+        ========================== */
+        .info-filter{
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* =========================
+           BUTTON PRINT
+        ========================== */
+        .btn-print{
+            padding: 10px 18px;
+            border: none;
+            background: #2453c4;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .btn-print:hover{
+            background: #183b94;
+        }
+
+        /* =========================
+           TABLE
+        ========================== */
+        table{
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td{
+            border: 1px solid #000;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        table th{
+            background: #f2f2f2;
+            text-align: center;
+        }
+
+        /* =========================
+           PRINT
+        ========================== */
+        @media print{
+
+            .btn-print{
+                display: none;
+            }
+
+            body{
+                padding: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- =========================
+         KOP LAPORAN
+    ========================== -->
+    <div class="kop-laporan">
+
+        <img src="/static/images/logo-tegal.png"
+             class="logo-kota">
+
+        <div class="kop-text">
+
+            <h2>PEMERINTAH KOTA TEGAL</h2>
+
+            <h3>
+                DINAS KEPENDUDUKAN DAN PENCATATAN SIPIL
+            </h3>
+
+            <p>
+                Sistem Administrasi Digital Capil
+                {% if tahun %}
+                    Tahun {{ tahun }}
+                {% else %}
+                    Semua Periode
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+         JUDUL
+    ========================== -->
+    <div class="judul-laporan">
+
+        <h2>
+            LAPORAN DATA PENGAJUAN MASYARAKAT
+        </h2>
+
+    </div>
+
+    <!-- =========================
+         FILTER INFO
+    ========================== -->
+    <div class="info-filter">
+
+        Bulan:
+        <strong>
+            {{ bulan if bulan else "Semua" }}
+        </strong>
+
+        |
+
+        Tahun:
+        <strong>
+            {{ tahun if tahun else "Semua" }}
+        </strong>
+
+    </div>
+
+    <!-- =========================
+         BUTTON PRINT
+    ========================== -->
+    <button onclick="window.print()" class="btn-print">
+        🖨 Print
+    </button>
+
+    <!-- =========================
+         TABLE
+    ========================== -->
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>No</th>
+                <th>NIK</th>
+                <th>Layanan</th>
+                <th>Status</th>
+                <th>Tanggal</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for item in pengajuan %}
+
+            <tr>
+
+                <td>{{ loop.index }}</td>
+                <td>{{ item.nik }}</td>
+                <td>{{ item.jenis_layanan }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.tanggal_pengajuan }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</body>
+</html>

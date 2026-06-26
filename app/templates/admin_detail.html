@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% set label_map = {
+'anggota': 'Perubahan Anggota Keluarga',
+'alamat': 'Perubahan Domisili/Alamat',
+'lainnya': 'Perubahan Lainnya (Hilang/Rusak/Lainnya)',
+'tidak_sekolah': 'Tidak/Belum Sekolah',
+'belum_tamat_sd': 'Belum Tamat SD/Sederajat',
+'tamat_sd': 'Tamat SD/Sederajat',
+'sltp': 'SLTP/Sederajat',
+'slta': 'SLTA/Sederajat',
+'diploma_1_2': 'Diploma I/II',
+'diploma_3': 'Akademi/Diploma III/Sarjana Muda',
+'s1': 'Diploma IV/Strata I',
+'s2': 'Strata II'
+} %}
+
+<style>
+    .admin-detail-wrapper {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-back-admin {
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 14.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-back-admin:hover {
+        transform: translateX(-4px);
+        color: var(--primary-hover);
+    }
+
+    .detail-card-premium {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        padding: 32px;
+        overflow: hidden;
+    }
+
+    .detail-header-premium {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 20px;
+        margin-bottom: 28px;
+    }
+
+    .detail-header-premium h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+    }
+
+    .detail-section-premium {
+        margin-bottom: 32px;
+    }
+
+    .detail-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 8px;
+    }
+
+    .info-grid-premium {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+        .info-grid-premium {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .info-item-premium {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 8px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .info-item-premium:hover {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+    }
+
+    .info-item-premium label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item-premium p {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .documents-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .doc-link-premium {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 12px 16px;
+        color: #334155 !important;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .doc-link-premium:hover {
+        border-color: var(--primary);
+        background: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .doc-icon {
+        font-size: 20px;
+    }
+
+    .catatan-box-premium {
+        background: #f8fafc;
+        border-left: 4px solid var(--primary);
+        border-radius: 4px 8px 8px 4px;
+        padding: 16px;
+        margin-top: 8px;
+    }
+
+    .catatan-box-premium h4 {
+        margin: 0 0 6px 0;
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+    }
+
+    .catatan-box-premium p {
+        margin: 0;
+        font-size: 14px;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    .admin-form-premium {
+        border-top: 2px dashed #e2e8f0;
+        padding-top: 28px;
+        margin-top: 28px;
+    }
+
+    .admin-form-premium h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group-premium {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group-premium label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .form-group-premium select,
+    .form-group-premium textarea,
+    .form-group-premium input[type="file"] {
+        padding: 12px 16px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #ffffff;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+
+    .form-group-premium select:focus,
+    .form-group-premium textarea:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group-premium textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-actions-premium {
+        display: flex;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .btn-submit-premium {
+        background: var(--primary);
+        color: white !important;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-submit-premium:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-cancel-premium {
+        background: #f1f5f9;
+        color: #475569 !important;
+        border: 1px solid #e2e8f0;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .btn-cancel-premium:hover {
+        background: #e2e8f0;
+        color: #1e293b !important;
+    }
+</style>
+
+<div class="admin-detail-wrapper">
+
+    <a href="/admin/pengajuan" class="btn-back-admin">
+        ← Kembali
+    </a>
+
+    <div class="detail-card-premium">
+
+        <!-- HEADER -->
+        <div class="detail-header-premium">
+            <h2>Detail Pengajuan</h2>
+            <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">
+                {{ item.status }}
+            </span>
+        </div>
+
+        <!-- SEKSI 1: DATA UTAMA -->
+        <div class="detail-section-premium">
+            <div class="detail-section-title">
+                <span>👤</span> Data Utama Pemohon
+            </div>
+
+            <div class="info-grid-premium">
+                <div class="info-item-premium">
+                    <label>Nama Lengkap</label>
+                    <p>{{ item.nama }}</p>
+                </div>
+
+                <div class="info-item-premium">
+                    <label>NIK Pemohon</label>
+                    <p>{{ item.nik }}</p>
+                </div>
+
+                <div class="info-item-premium">
+                    <label>Jenis Layanan</label>
+                    <p>{{ item.jenis_layanan }}</p>
+                </div>
+
+                <div class="info-item-premium">
+                    <label>Tanggal Pengajuan</label>
+                    <p>{{ item.tanggal_pengajuan }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKSI 2: DETAIL DATA LAYANAN -->
+        <div class="detail-section-premium">
+
+            {% if 'Pendidikan' in item.jenis_layanan %}
+            <div class="detail-section-title">
+                <span>🎓</span> Detail Perubahan Status Pendidikan
+            </div>
+            <div class="info-grid-premium">
+                <div class="info-item-premium">
+                    <label>Jenjang Pendidikan Terakhir (Lama)</label>
+                    <p>{{ item.pendidikan_lama or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Jenjang Pendidikan Terakhir (Baru)</label>
+                    <p>{{ label_map.get(item.detail_pengajuan, item.detail_pengajuan) or '-' }}</p>
+                </div>
+            </div>
+
+            {% elif 'Cetak Ulang KK' in item.jenis_layanan %}
+            <div class="detail-section-title">
+                <span>📍</span> Detail Alamat & Data KK
+            </div>
+            <div class="info-grid-premium">
+                <div class="info-item-premium">
+                    <label>Jenis Pengajuan KK</label>
+                    <p>{{ label_map.get(item.detail_pengajuan, item.detail_pengajuan) or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Nomor KK</label>
+                    <p>{{ item.no_kk or '-' }}</p>
+                </div>
+                <div class="info-item-premium" style="grid-column: span 2;">
+                    <label>Nama Jalan / Blok / No. Rumah</label>
+                    <p>{{ item.alamat or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Provinsi</label>
+                    <p>{{ item.provinsi or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Kabupaten / Kota</label>
+                    <p>{{ item.kabupaten or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Kecamatan</label>
+                    <p>{{ item.kecamatan or '-' }}</p>
+                </div>
+                <div class="info-item-premium">
+                    <label>Desa / Kelurahan</label>
+                    <p>{{ item.desa or '-' }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- SEKSI 3: DOKUMEN & CATATAN -->
+        <div class="detail-section-premium">
+            <div class="detail-section-title">
+                <span>📎</span> Catatan & Lampiran Dokumen
+            </div>
+
+            {% if item.catatan_user %}
+            <div class="catatan-box-premium" style="margin-bottom: 20px;">
+                <h4>Catatan dari Pemohon:</h4>
+                <p>{{ item.catatan_user }}</p>
+            </div>
+            {% else %}
+            <div class="catatan-box-premium" style="margin-bottom: 20px; border-left-color: #cbd5e1;">
+                <h4>Catatan dari Pemohon:</h4>
+                <p style="color: #64748b; font-style: italic;">Tidak ada catatan tambahan dari pemohon.</p>
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 16px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 10px;">Dokumen Persyaratan:
+                </h4>
+                {% if item.dokumen and item.dokumen|length > 0 %}
+                <div class="documents-grid">
+                    {% for file in item.dokumen %}
+                    <a href="/static/uploads/{{ file.nama_file }}" target="_blank" class="doc-link-premium">
+                        <span class="doc-icon">📄</span>
+                        <span style="flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
+                            file.nama_file }}</span>
+                        <span style="color: var(--primary); font-size: 13px; font-weight: 700;">Lihat →</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color: #64748b; font-size: 14px; font-style: italic;">Tidak ada dokumen pendukung yang
+                    dilampirkan.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- FILE BALASAN ADMIN YANG SUDAH ADA -->
+        {% if item.file_balasan %}
+        <div class="detail-section-premium"
+            style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">📎</span>
+                <div>
+                    <h4 style="margin: 0; font-size: 14px; font-weight: 700; color: #166534;">File Balasan Admin
+                        Terkini:</h4>
+                    <a href="/static/uploads/{{ item.file_balasan }}" target="_blank"
+                        style="color: #15803d; font-weight: 700; text-decoration: underline; font-size: 13.5px; display: inline-block; margin-top: 4px;">
+                        Lihat File Balasan Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- SEKSI 4: FORM PROSES & VERIFIKASI ADMIN -->
+        <form method="POST" action="/admin/proses/{{ item.id }}" enctype="multipart/form-data"
+            class="admin-form-premium">
+
+            <h3><span>⚙️</span> Proses Verifikasi & Status Pengajuan</h3>
+
+            <!-- STATUS -->
+            <div class="form-group-premium">
+                <label for="status">Ubah Status Pengajuan</label>
+                <select name="status" id="status">
+                    <option value="Diproses" {% if item.status=="Diproses" %}selected{% endif %}>
+                        Diproses
+                    </option>
+                    <option value="Disetujui" {% if item.status=="Disetujui" %}selected{% endif %}>
+                        Disetujui (Menunggu Dokumen Selesai)
+                    </option>
+                    <option value="Ditolak" {% if item.status=="Ditolak" %}selected{% endif %}>
+                        Ditolak
+                    </option>
+                    <option value="Selesai" {% if item.status=="Selesai" %}selected{% endif %}>
+                        Selesai (Dokumen Telah Diserahkan/Selesai)
+                    </option>
+                </select>
+            </div>
+
+            <!-- CATATAN ADMIN -->
+            <div class="form-group-premium">
+                <label for="catatan">Catatan / Keterangan Admin</label>
+                <textarea name="catatan" id="catatan"
+                    placeholder="Tuliskan catatan, alasan penolakan, atau pesan untuk pemohon di sini...">{{ item.catatan_admin or '' }}</textarea>
+            </div>
+
+            <!-- FILE ADMIN -->
+            <div class="form-group-premium">
+                <label for="file_admin">Unggah Dokumen Balasan / Hasil Cetak (Opsional)</label>
+                <input type="file" name="file_admin" id="file_admin">
+                <span style="font-size: 12px; color: #64748b;">Gunakan jika ingin melampirkan hasil cetak ulang
+                    KK/KTP/dokumen yang sudah diproses berupa file PDF/Gambar.</span>
+            </div>
+
+            <!-- ACTION -->
+            <div class="form-actions-premium">
+                <a href="/admin" class="btn-cancel-premium">
+                    Batal
+                </a>
+                <button type="submit" class="btn-submit-premium">
+                    Simpan Perubahan & Update Status
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
