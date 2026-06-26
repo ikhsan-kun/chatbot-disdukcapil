@@ -197,5 +197,24 @@ function validateNik(el) {
         warning.innerText = "";
     }
 }
+
+// ==========================
+// VALIDASI FORM SUBMISSION & NIK
+// ==========================
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        alert("Mohon lengkapi data yang sesuai");
+        return;
+    }
+
+    const nikInput = document.getElementById("nik");
+    if (nikInput && !nikInput.value.startsWith("3376")) {
+        e.preventDefault();
+        alert("Pengisian NIK harus diawali 3376");
+        nikInput.focus();
+        return;
+    }
+});
 </script>
 {% endblock %}

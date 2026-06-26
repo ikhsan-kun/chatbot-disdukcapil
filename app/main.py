@@ -690,6 +690,9 @@ async def process_register(
     password: str = Form(...),
     confirm_password: str = Form(...)
 ):
+    if not nik.startswith("3376"):
+        return RedirectResponse("/register", status_code=303)
+
     if password != confirm_password:
         return RedirectResponse("/register", status_code=303)
 
@@ -926,12 +929,60 @@ async def update_profile(
     request: Request,
     nama: str = Form(...),
     email: str = Form(...),
+    old_password: Optional[str] = Form(None),
+    new_password: Optional[str] = Form(None),
+    confirm_new_password: Optional[str] = Form(None),
     foto_profile: UploadFile = File(None)
 ):
     user = request.session.get("user")
 
     if not user:
         return RedirectResponse("/login", status_code=303)
+
+    old_password = old_password.strip() if old_password else ""
+    new_password = new_password.strip() if new_password else ""
+    confirm_new_password = confirm_new_password.strip() if confirm_new_password else ""
+
+    update_pw = False
+    hashed_pw = None
+
+    if old_password or new_password or confirm_new_password:
+        if not old_password or not new_password or not confirm_new_password:
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": "Mohon lengkapi seluruh field password jika ingin mengubah password"}
+            )
+        
+        if new_password != confirm_new_password:
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": "Konfirmasi password baru tidak cocok"}
+            )
+            
+        if len(new_password) < 6:
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": "Password baru minimal 6 karakter"}
+            )
+            
+        conn_check = get_db()
+        cursor_check = conn_check.cursor()
+        cursor_check.execute("SELECT password FROM users WHERE id = %s", (user["id"],))
+        db_user = cursor_check.fetchone()
+        conn_check.close()
+        
+        if not db_user or not bcrypt.checkpw(old_password.encode("utf-8"), db_user["password"].encode("utf-8")):
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": "Password lama tidak sesuai"}
+            )
+            
+        hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        update_pw = True
 
     filename = user.get("foto_profile")
 
@@ -948,13 +999,23 @@ async def update_profile(
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        UPDATE users
-        SET nama = %s,
-            email = %s,
-            foto_profile = %s
-        WHERE id = %s
-    """, (nama, email, filename, user["id"]))
+    if update_pw:
+        cursor.execute("""
+            UPDATE users
+            SET nama = %s,
+                email = %s,
+                foto_profile = %s,
+                password = %s
+            WHERE id = %s
+        """, (nama, email, filename, hashed_pw, user["id"]))
+    else:
+        cursor.execute("""
+            UPDATE users
+            SET nama = %s,
+                email = %s,
+                foto_profile = %s
+            WHERE id = %s
+        """, (nama, email, filename, user["id"]))
 
     print("rows affected:", cursor.rowcount)  # cek di terminal
 

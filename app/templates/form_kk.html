@@ -231,5 +231,16 @@
             warning.innerText = "";
         }
     }
+
+    // ==========================
+    // VALIDASI FORM SUBMISSION
+    // ==========================
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            alert("Mohon lengkapi data yang sesuai");
+            return;
+        }
+    });
 </script>
 {% endblock %}

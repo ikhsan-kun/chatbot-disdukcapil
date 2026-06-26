@@ -1,29 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="form-container">
-    <h2>Edit Profil</h2>
+<div class="form-container" style="max-width: 600px; margin: 40px auto; padding: 30px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+    <h2 style="font-size: 24px; font-weight: 800; color: var(--neutral-900); margin-bottom: 24px;">Edit Profil</h2>
 
-<form method="POST" action="/edit-profile" enctype="multipart/form-data">
+    {% if error %}
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: 600; font-size: 14px;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
 
-    <label>Nama</label>
-    <input type="text" name="nama" value="{{ user.nama }}" required>
+<form method="POST" action="/edit-profile" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 16px;">
 
-    <label>Email</label>
-    <input type="email" name="email" value="{{ user.email }}" required>
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Nama</label>
+        <input type="text" name="nama" value="{{ user.nama }}" required style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+    </div>
+
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Email</label>
+        <input type="email" name="email" value="{{ user.email }}" required style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+    </div>
 
     <!-- FOTO PROFILE -->
-    <label>Foto Profile</label>
-    <input type="file" name="foto_profile">
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Foto Profile</label>
+        <input type="file" name="foto_profile" style="width: 100%;">
+    </div>
+
+    <!-- UBAH PASSWORD -->
+    <hr style="border: 0; border-top: 1px solid var(--neutral-200); margin: 16px 0;">
+    <h3 style="font-size: 16px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px;">Ubah Password (Opsional)</h3>
+
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Lama</label>
+        <input type="password" name="old_password" placeholder="Masukkan password lama" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+    </div>
+
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Baru</label>
+        <input type="password" name="new_password" placeholder="Masukkan password baru (minimal 6 karakter)" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+    </div>
+
+    <div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Konfirmasi Password Baru</label>
+        <input type="password" name="confirm_new_password" placeholder="Konfirmasi password baru" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+    </div>
 
     <!-- BUTTON -->
-    <div class="form-actions">
+    <div class="form-actions" style="display: flex; gap: 12px; margin-top: 20px;">
 
-        <a href="/dashboard" class="btn-batal">
+        <a href="/dashboard" class="btn-batal" style="text-decoration: none; padding: 10px 20px; border-radius: var(--radius-md); font-weight: 600; text-align: center; flex: 1; border: 1px solid var(--neutral-300); color: var(--neutral-700);">
             ❌ Batal
         </a>
 
-        <button type="submit" class="btn-submit">
+        <button type="submit" class="btn-submit" style="padding: 10px 20px; border-radius: var(--radius-md); font-weight: 600; flex: 1; background: var(--primary); color: white; border: none; cursor: pointer;">
             💾 Simpan Perubahan
         </button>
 
