@@ -127,14 +127,14 @@ nikInputReg.addEventListener("input", function () {
 document.querySelector('form').addEventListener('submit', function(e) {
     if (!this.checkValidity()) {
         e.preventDefault();
-        alert("Mohon lengkapi data yang sesuai");
+        showToast("Mohon lengkapi data yang sesuai", "error");
         return;
     }
 
     const nikInput = document.getElementById("nik");
     if (nikInput && !nikInput.value.startsWith("3376")) {
         e.preventDefault();
-        alert("Pengisian NIK harus diawali 3376");
+        showToast("Pengisian NIK harus diawali 3376", "error");
         nikInput.focus();
         return;
     }
