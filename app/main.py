@@ -682,6 +682,66 @@ async def process_login(
     else:
         return RedirectResponse("/login", status_code=303)
 
+@app.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="forgot_password.html",
+        context={}
+    )
+
+@app.post("/forgot-password")
+async def process_forgot_password(
+    request: Request,
+    nik: str = Form(...),
+    new_password: str = Form(...),
+    confirm_new_password: str = Form(...)
+):
+    if not nik.startswith("3376"):
+        return templates.TemplateResponse(
+            request=request,
+            name="forgot_password.html",
+            context={"error": "Pengisian NIK harus diawali 3376"}
+        )
+
+    if new_password != confirm_new_password:
+        return templates.TemplateResponse(
+            request=request,
+            name="forgot_password.html",
+            context={"error": "Konfirmasi password baru tidak cocok"}
+        )
+
+    if len(new_password) < 6:
+        return templates.TemplateResponse(
+            request=request,
+            name="forgot_password.html",
+            context={"error": "Password baru minimal 6 karakter"}
+        )
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE nik = %s", (nik,))
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return templates.TemplateResponse(
+            request=request,
+            name="forgot_password.html",
+            context={"error": "NIK tidak terdaftar"}
+        )
+
+    hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    cursor.execute("UPDATE users SET password = %s WHERE nik = %s", (hashed_pw, nik))
+    conn.commit()
+    conn.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="forgot_password.html",
+        context={"success": "Password berhasil diubah. Silakan masuk dengan password baru."}
+    )
+
 @app.post("/register")
 async def process_register(
     nik: str = Form(...),
