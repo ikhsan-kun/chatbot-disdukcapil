@@ -680,7 +680,11 @@ async def process_login(
             return RedirectResponse("/dashboard", status_code=303)
 
     else:
-        return RedirectResponse("/login", status_code=303)
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={"error": "NIK atau password salah. Silakan coba lagi."}
+        )
 
 @app.get("/forgot-password", response_class=HTMLResponse)
 async def forgot_password_page(request: Request):
@@ -926,7 +930,7 @@ async def proses_pengajuan(
 
         conn.commit()
 
-    return RedirectResponse("/admin", status_code=303)
+    return RedirectResponse("/admin/pengajuan", status_code=303)
 
 
 @app.get("/admin/detail/{id}", response_class=HTMLResponse)

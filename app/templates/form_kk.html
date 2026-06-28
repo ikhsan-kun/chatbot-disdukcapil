@@ -238,7 +238,7 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         if (!this.checkValidity()) {
             e.preventDefault();
-            showToast("Mohon lengkapi data yang sesuai", "error");
+            showToast("Mohon lengkapi semua data yang sesuai.", "error");
             return;
         }
     });

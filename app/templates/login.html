@@ -15,6 +15,12 @@
             Masuk ke akun Disdukcapil Anda
         </p>
 
+        {% if error %}
+        <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; font-size: 14px; text-align: left; display: flex; align-items: center; gap: 8px;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
         <form method="POST" action="/login">
 
             <!-- NIK -->
