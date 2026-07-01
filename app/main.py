@@ -21,8 +21,8 @@ from app.chatbot.chatbot_ai import chatbot_response
 def get_db():
     return pymysql.connect(
         host="localhost",
-        user="root",
-        password="",
+        user="supercaps",
+        password="supercaps",
         database="disdukcapil_ta",
         cursorclass=pymysql.cursors.DictCursor
     )

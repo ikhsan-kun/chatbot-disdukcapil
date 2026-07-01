@@ -306,7 +306,7 @@ button, .btn {
                 radial-gradient(circle at bottom left, rgba(30, 58, 138, 0.06), transparent 50%),
                 linear-gradient(135deg, #0b1329, #13244d, #1e3a8a);
     color: white;
-    padding: 100px 40px 150px;
+    padding: 100px 40px 110px;
     position: relative;
     overflow: hidden;
 }
@@ -427,7 +427,7 @@ button, .btn {
     left: 0;
     width: 100%;
     height: 80px;
-    background: #f8fafc;
+    background: #ffffff;
     border-radius: 100% 100% 0 0 / 80px 80px 0 0;
     z-index: 1;
 }
@@ -446,7 +446,7 @@ button, .btn {
     padding: 0 24px;
 }
 
-.stat-card {
+/* .stat-card {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -461,9 +461,9 @@ button, .btn {
 .stat-card:hover {
     transform: translateY(-6px);
     box-shadow: var(--shadow-xl);
-}
+} */
 
-.stat-icon {
+/* .stat-icon {
     width: 48px;
     height: 48px;
     display: flex;
@@ -493,7 +493,7 @@ button, .btn {
     color: var(--neutral-500);
     margin-top: 2px;
     font-weight: 500;
-}
+} */
 
 /* Hero Chat Floating Widget Preview */
 .hero-chat-preview {
@@ -546,17 +546,67 @@ button, .btn {
    5. LAYANAN GRID SECTION
    ========================================================================== */
 .layanan-section {
-    background: #f8fafc;
-    padding: 80px 0 100px;
+    position: relative;
+    background: radial-gradient(120% 120% at 50% 0%, #ffffff 0%, #f3f7fa 60%, #eef3f8 100%);
+    padding: 30px 0 100px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.layanan-section::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: -5%;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.layanan-section::after {
+    content: '';
+    position: absolute;
+    bottom: 10%;
+    right: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, rgba(245, 158, 11, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.section-tag-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.section-tag-badge {
+    background: rgba(37, 99, 235, 0.06);
+    color: var(--primary);
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(37, 99, 235, 0.12);
 }
 
 .judul-layanan {
-    font-size: 36px;
+    font-size: 38px;
     font-weight: 800;
     color: var(--neutral-900);
     text-align: center;
     margin-bottom: 12px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.8px;
+    background: linear-gradient(135deg, var(--neutral-900) 30%, var(--neutral-700) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .sub-layanan {
@@ -564,7 +614,7 @@ button, .btn {
     text-align: center;
     font-size: 16px;
     max-width: 600px;
-    margin: 0 auto 48px;
+    margin: 0 auto 56px;
     line-height: 1.6;
 }
 
@@ -572,62 +622,209 @@ button, .btn {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    margin-bottom: 48px;
+    margin-bottom: 56px;
+    position: relative;
+    z-index: 2;
 }
 
+/* Card glassmorphic panel styling */
 .card {
-    background: white;
-    padding: 32px 28px;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(226, 232, 240, 0.6);
-    transition: var(--transition);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 36px 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.02);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
 }
 
 .card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-premium);
-    border-color: rgba(37, 99, 235, 0.15);
+    background: #ffffff;
+    border-color: rgba(226, 232, 240, 0.4);
+}
+
+/* Card Themes configuration */
+/* Blue theme (KK) */
+.card-blue::before {
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+.card-blue:hover {
+    box-shadow: 0 20px 35px rgba(37, 99, 235, 0.08);
+}
+.card-blue .icon-box {
+    background: rgba(37, 99, 235, 0.06);
+    color: #2563eb;
+}
+.card-blue:hover .icon-box {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+/* Indigo theme (Pendidikan) */
+.card-indigo::before {
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+}
+.card-indigo:hover {
+    box-shadow: 0 20px 35px rgba(79, 70, 229, 0.08);
+}
+.card-indigo .icon-box {
+    background: rgba(79, 70, 229, 0.06);
+    color: #4f46e5;
+}
+.card-indigo:hover .icon-box {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: white;
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+/* Orange theme (Perubahan Nama) */
+.card-orange::before {
+    background: linear-gradient(90deg, #d97706, #f59e0b);
+}
+.card-orange:hover {
+    box-shadow: 0 20px 35px rgba(217, 119, 6, 0.08);
+}
+.card-orange .icon-box {
+    background: rgba(217, 119, 6, 0.06);
+    color: #d97706;
+}
+.card-orange:hover .icon-box {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    color: white;
+    box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25);
+}
+
+/* Green theme (Akta Lahir) */
+.card-green::before {
+    background: linear-gradient(90deg, #059669, #10b981);
+}
+.card-green:hover {
+    box-shadow: 0 20px 35px rgba(5, 150, 105, 0.08);
+}
+.card-green .icon-box {
+    background: rgba(5, 150, 105, 0.06);
+    color: #059669;
+}
+.card-green:hover .icon-box {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.25);
+}
+
+/* Red theme (Akta Mati) */
+.card-red::before {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+.card-red:hover {
+    box-shadow: 0 20px 35px rgba(220, 38, 38, 0.08);
+}
+.card-red .icon-box {
+    background: rgba(220, 38, 38, 0.06);
+    color: #dc2626;
+}
+.card-red:hover .icon-box {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+}
+
+/* Purple theme (KIA) */
+.card-purple::before {
+    background: linear-gradient(90deg, #7c3aed, #8b5cf6);
+}
+.card-purple:hover {
+    box-shadow: 0 20px 35px rgba(124, 58, 237, 0.08);
+}
+.card-purple .icon-box {
+    background: rgba(124, 58, 237, 0.06);
+    color: #7c3aed;
+}
+.card-purple:hover .icon-box {
+    background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+    color: white;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
 }
 
 .card .icon-box {
-    width: 56px;
-    height: 56px;
-    background: var(--primary-light);
-    border-radius: var(--radius-md);
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 26px;
     margin-bottom: 24px;
-    transition: var(--transition);
-}
-
-.card:hover .icon-box {
-    background: var(--primary);
-    color: white;
-    transform: scale(1.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card h3 {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 700;
     color: var(--neutral-900);
     margin-bottom: 12px;
     line-height: 1.4;
-    min-height: auto;
 }
 
 .card p {
     font-size: 14px;
     color: var(--neutral-500);
     line-height: 1.6;
-    margin-bottom: 0;
+    margin-bottom: 24px;
     text-align: left;
-    min-height: auto;
+}
+
+/* Card Action arrow styling */
+.card-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--neutral-500);
+    margin-top: auto;
+    transition: all 0.3s ease;
+}
+
+.card-action svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-action {
+    color: var(--primary);
+}
+
+.card-indigo:hover .card-action { color: #4f46e5; }
+.card-orange:hover .card-action { color: #d97706; }
+.card-green:hover .card-action { color: #059669; }
+.card-red:hover .card-action { color: #dc2626; }
+.card-purple:hover .card-action { color: #7c3aed; }
+
+.card:hover .card-action svg {
+    transform: translateX(6px);
 }
 
 .btn-center {
@@ -655,6 +852,27 @@ button, .btn {
     color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+/* Responsiveness media queries for cards */
+@media (max-width: 1024px) {
+    .card-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-wrapper {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    .judul-layanan {
+        font-size: 32px;
+    }
+    .sub-layanan {
+        margin-bottom: 36px;
+    }
 }
 
 /* ==========================================================================
@@ -2118,6 +2336,9 @@ button, .btn {
 }
 
 .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 24px;
 }
 
@@ -2624,7 +2845,6 @@ button, .btn {
         gap: 20px;
     }
     
-    .card-wrapper,
     .layanan-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -2706,7 +2926,6 @@ button, .btn {
         margin-top: -40px;
     }
     
-    .card-wrapper,
     .layanan-grid {
         grid-template-columns: 1fr;
     }
@@ -2817,7 +3036,7 @@ button, .btn {
    17. SECTION BUTUH BANTUAN & LIHAT SELENGKAPNYA
    ========================================================================== */
 .hero-help {
-    padding: 80px 0;
+    padding: 5px 0;
     background: #f8fafc;
     display: flex;
     justify-content: center;
@@ -2968,12 +3187,6 @@ button, .btn {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .form-group label {

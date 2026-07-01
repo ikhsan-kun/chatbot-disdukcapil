@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text
 
-DB_USER = "root"
-DB_PASSWORD = ""
+DB_USER = "supercaps"
+DB_PASSWORD = "supercaps"
 DB_HOST = "localhost"
 DB_NAME = "disdukcapil_TA"
 
