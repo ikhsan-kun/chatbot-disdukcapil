@@ -220,7 +220,6 @@ function formatMessageContent(rawText) {
     let text = rawText.trim();
 
     // 1. Format Bold (**bold text** atau *bold text*)
-    text = text.replace(/\*\*(.*?)\*\?/g, '<strong>$1</strong>'); // safe fallback
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
     text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');

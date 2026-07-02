@@ -30,21 +30,81 @@
 
     <!-- UBAH PASSWORD -->
     <hr style="border: 0; border-top: 1px solid var(--neutral-200); margin: 16px 0;">
-    <h3 style="font-size: 16px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px;">Ubah Password</h3>
+    <h3 style="font-size: 16px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px;">Ubah Password (Kosongkan jika tidak ingin diubah)</h3>
 
+    <!-- PASSWORD LAMA -->
     <div>
-        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Lama</label>
-        <input type="password" name="old_password" placeholder="Masukkan password lama" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+        <label for="old_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Lama</label>
+        <div class="password-box">
+            <input
+                type="password"
+                id="old_password"
+                name="old_password"
+                placeholder="Masukkan password lama"
+                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
+            >
+            <span class="show-password" onclick="toggleOldPassword()" id="eyeIconOld">
+                <svg id="iconShowOld" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg id="iconHideOld" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+            </span>
+        </div>
     </div>
 
+    <!-- PASSWORD BARU -->
     <div>
-        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Baru</label>
-        <input type="password" name="new_password" placeholder="Masukkan password baru (minimal 6 karakter)" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+        <label for="new_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Baru</label>
+        <div class="password-box">
+            <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                placeholder="Masukkan password baru (minimal 6 karakter)"
+                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
+            >
+            <span class="show-password" onclick="toggleNewPassword()" id="eyeIconNew">
+                <svg id="iconShowNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg id="iconHideNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+            </span>
+        </div>
     </div>
 
+    <!-- KONFIRMASI PASSWORD BARU -->
     <div>
-        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Konfirmasi Password Baru</label>
-        <input type="password" name="confirm_new_password" placeholder="Konfirmasi password baru" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
+        <label for="confirm_new_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Konfirmasi Password Baru</label>
+        <div class="password-box">
+            <input
+                type="password"
+                id="confirm_new_password"
+                name="confirm_new_password"
+                placeholder="Konfirmasi password baru"
+                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
+            >
+            <span class="show-password" onclick="toggleConfirmNewPassword()" id="eyeIconConfirmNew">
+                <svg id="iconShowConfirmNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <svg id="iconHideConfirmNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+            </span>
+        </div>
     </div>
 
     <!-- BUTTON -->
@@ -62,5 +122,52 @@
 
 </form>
 </div>
+
+<script>
+function toggleOldPassword() {
+    const input = document.getElementById("old_password");
+    const iconShow = document.getElementById("iconShowOld");
+    const iconHide = document.getElementById("iconHideOld");
+    if (input.type === "password") {
+        input.type = "text";
+        iconShow.style.display = "none";
+        iconHide.style.display = "inline";
+    } else {
+        input.type = "password";
+        iconShow.style.display = "inline";
+        iconHide.style.display = "none";
+    }
+}
+
+function toggleNewPassword() {
+    const input = document.getElementById("new_password");
+    const iconShow = document.getElementById("iconShowNew");
+    const iconHide = document.getElementById("iconHideNew");
+    if (input.type === "password") {
+        input.type = "text";
+        iconShow.style.display = "none";
+        iconHide.style.display = "inline";
+    } else {
+        input.type = "password";
+        iconShow.style.display = "inline";
+        iconHide.style.display = "none";
+    }
+}
+
+function toggleConfirmNewPassword() {
+    const input = document.getElementById("confirm_new_password");
+    const iconShow = document.getElementById("iconShowConfirmNew");
+    const iconHide = document.getElementById("iconHideConfirmNew");
+    if (input.type === "password") {
+        input.type = "text";
+        iconShow.style.display = "none";
+        iconHide.style.display = "inline";
+    } else {
+        input.type = "password";
+        iconShow.style.display = "inline";
+        iconHide.style.display = "none";
+    }
+}
+</script>
 
 {% endblock %}

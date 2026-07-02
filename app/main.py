@@ -11,6 +11,10 @@ import os
 import uuid
 import bcrypt
 import pymysql
+import time
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from database import engine
 from pydantic import BaseModel
@@ -18,17 +22,27 @@ from pydantic import BaseModel
 # Import fungsi chatbot AI kita
 from app.chatbot.chatbot_ai import chatbot_response
 
+# ============================================================
+# RATE LIMITING – Forgot Password (in-memory, per NIK)
+# ============================================================
+_pw_reset_attempts: dict = {}   # {nik: [count, first_timestamp]}
+PW_RESET_MAX = 3
+PW_RESET_WINDOW = 900           # 15 menit
+
 def get_db():
     return pymysql.connect(
-        host="localhost",
-        user="supercaps",
-        password="supercaps",
-        database="disdukcapil_ta",
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "supercaps"),
+        password=os.getenv("DB_PASSWORD", "supercaps"),
+        database=os.getenv("DB_NAME", "disdukcapil_ta"),
         cursorclass=pymysql.cursors.DictCursor
     )
 
 app = FastAPI()
-app.add_middleware(SessionMiddleware, secret_key="secret123")
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.getenv("SESSION_SECRET_KEY", "dev-fallback-key-change-in-production")
+)
 
 # Download template F-1.06 secara otomatis jika belum tersedia
 import urllib.request
@@ -334,6 +348,9 @@ async def pengajuan(request: Request):
 
 @app.get("/pengajuan-kk", response_class=HTMLResponse)
 async def pengajuan_kk(request: Request):
+    # Fix Bug #7: wajib login sebelum melihat form
+    if not request.session.get("user"):
+        return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(
         request=request,
         name="form_kk.html",
@@ -433,39 +450,40 @@ async def submit_kk(
 
         os.makedirs(upload_folder, exist_ok=True)
 
-        # simpan semua file
-        for file in file_upload:
+        # Fix Bug #6: cek None sebelum iterasi file_upload
+        if file_upload:
+            for file in file_upload:
 
-            if file.filename != "":
+                if file.filename != "":
 
-                filename = f"{uuid.uuid4()}_{file.filename}"
+                    filename = f"{uuid.uuid4()}_{file.filename}"
 
-                file_path = os.path.join(upload_folder, filename)
+                    file_path = os.path.join(upload_folder, filename)
 
-                with open(file_path, "wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
+                    with open(file_path, "wb") as buffer:
+                        shutil.copyfileobj(file.file, buffer)
 
-                conn.execute(
+                    conn.execute(
 
-                    text("""
-                        INSERT INTO dokumen_pengajuan
-                        (
-                            pengajuan_id,
-                            nama_file
-                        )
-                        VALUES
-                        (
-                            :pengajuan_id,
-                            :nama_file
-                        )
-                    """),
+                        text("""
+                            INSERT INTO dokumen_pengajuan
+                            (
+                                pengajuan_id,
+                                nama_file
+                            )
+                            VALUES
+                            (
+                                :pengajuan_id,
+                                :nama_file
+                            )
+                        """),
 
-                    {
-                        "pengajuan_id": pengajuan_id,
-                        "nama_file": filename
-                    }
+                        {
+                            "pengajuan_id": pengajuan_id,
+                            "nama_file": filename
+                        }
 
-                )
+                    )
 
         conn.commit()
 
@@ -571,6 +589,9 @@ async def submit_pendidikan(
 
 @app.get("/pengajuan-pendidikan", response_class=HTMLResponse)
 async def pengajuan_pendidikan(request: Request):
+    # Fix Bug #7: wajib login sebelum melihat form
+    if not request.session.get("user"):
+        return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(
         request=request,
         name="form_pendidikan.html",
@@ -701,6 +722,27 @@ async def process_forgot_password(
     new_password: str = Form(...),
     confirm_new_password: str = Form(...)
 ):
+    # ── Fix Bug #10: Rate limiting (maks 3x per 15 menit per NIK) ──
+    now = time.time()
+    entry = _pw_reset_attempts.get(nik)
+    if entry:
+        count, first_ts = entry
+        if now - first_ts > PW_RESET_WINDOW:
+            # Window sudah lewat, reset counter
+            _pw_reset_attempts[nik] = [1, now]
+        elif count >= PW_RESET_MAX:
+            sisa_menit = int((PW_RESET_WINDOW - (now - first_ts)) / 60) + 1
+            return templates.TemplateResponse(
+                request=request,
+                name="forgot_password.html",
+                context={"error": f"Terlalu banyak percobaan. Coba lagi dalam {sisa_menit} menit."}
+            )
+        else:
+            _pw_reset_attempts[nik][0] += 1
+    else:
+        _pw_reset_attempts[nik] = [1, now]
+    # ── End rate limiting ──
+
     if not nik.startswith("3376"):
         return templates.TemplateResponse(
             request=request,
@@ -739,6 +781,9 @@ async def process_forgot_password(
     cursor.execute("UPDATE users SET password = %s WHERE nik = %s", (hashed_pw, nik))
     conn.commit()
     conn.close()
+
+    # Reset counter setelah berhasil
+    _pw_reset_attempts.pop(nik, None)
 
     return templates.TemplateResponse(
         request=request,
@@ -1003,6 +1048,30 @@ async def update_profile(
     if not user:
         return RedirectResponse("/login", status_code=303)
 
+    # Preserve user inputted values on error response
+    temp_user = {
+        "id": user["id"],
+        "nik": user["nik"],
+        "nama": nama,
+        "email": email,
+        "role": user["role"],
+        "foto_profile": user["foto_profile"]
+    }
+
+    # 1. Cek duplikasi email ke user lain
+    conn_db = get_db()
+    cursor_db = conn_db.cursor()
+    cursor_db.execute("SELECT id FROM users WHERE email = %s AND id != %s", (email, user["id"]))
+    existing_user_email = cursor_db.fetchone()
+    conn_db.close()
+
+    if existing_user_email:
+        return templates.TemplateResponse(
+            request=request,
+            name="edit_profile.html",
+            context={"user": temp_user, "error": "Email sudah digunakan oleh pengguna lain"}
+        )
+
     old_password = old_password.strip() if old_password else ""
     new_password = new_password.strip() if new_password else ""
     confirm_new_password = confirm_new_password.strip() if confirm_new_password else ""
@@ -1015,21 +1084,21 @@ async def update_profile(
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": user, "error": "Mohon lengkapi seluruh field password jika ingin mengubah password"}
+                context={"user": temp_user, "error": "Mohon lengkapi seluruh field password jika ingin mengubah password"}
             )
         
         if new_password != confirm_new_password:
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": user, "error": "Konfirmasi password baru tidak cocok"}
+                context={"user": temp_user, "error": "Konfirmasi password baru tidak cocok"}
             )
             
         if len(new_password) < 6:
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": user, "error": "Password baru minimal 6 karakter"}
+                context={"user": temp_user, "error": "Password baru minimal 6 karakter"}
             )
             
         conn_check = get_db()
@@ -1042,7 +1111,7 @@ async def update_profile(
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": user, "error": "Password lama tidak sesuai"}
+                context={"user": temp_user, "error": "Password lama tidak sesuai"}
             )
             
         hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -1282,7 +1351,11 @@ def admin_layanan(request: Request):
     )
 
 @app.get("/admin/layanan/hapus/{id}")
-def hapus_layanan(id: int):
+def hapus_layanan(request: Request, id: int):
+    # Fix Bug #4: wajib admin
+    user = request.session.get("user")
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1294,8 +1367,10 @@ def hapus_layanan(id: int):
 
 @app.get("/admin/layanan/edit/{id}")
 def edit_layanan(request: Request, id: int):
-
+    # Fix Bug #5: wajib admin
     user = request.session.get("user")
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
 
     conn = get_db()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -1314,11 +1389,16 @@ def edit_layanan(request: Request, id: int):
 
 @app.post("/admin/layanan/update/{id}")
 def update_layanan(
+    request: Request,
     id: int,
     judul: str = Form(...),
     waktu_proses: str = Form(...),
     deskripsi: str = Form(...)
 ):
+    # Fix Bug #5: wajib admin
+    user = request.session.get("user")
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1337,6 +1417,10 @@ def update_layanan(
 
 @app.post("/admin/layanan/tambah")
 async def tambah_layanan_post(request: Request):
+    # Fix: wajib admin
+    user = request.session.get("user")
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
 
     form = await request.form()
 
@@ -1359,8 +1443,10 @@ async def tambah_layanan_post(request: Request):
 
 @app.get("/admin/layanan/tambah")
 def tambah_layanan_get(request: Request):
-
+    # Fix: wajib admin
     user = request.session.get("user")
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
 
     return templates.TemplateResponse(
         request=request,

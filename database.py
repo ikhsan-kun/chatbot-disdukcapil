@@ -1,9 +1,13 @@
 from sqlalchemy import create_engine, text
+import os
+from dotenv import load_dotenv
 
-DB_USER = "supercaps"
-DB_PASSWORD = "supercaps"
-DB_HOST = "localhost"
-DB_NAME = "disdukcapil_TA"
+load_dotenv()
+
+DB_USER = os.getenv("DB_USER", "supercaps")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "supercaps")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "disdukcapil_ta")  # Fix Bug #9: konsisten lowercase
 
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 

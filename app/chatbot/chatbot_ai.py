@@ -178,8 +178,6 @@ def direct_match(question):
             ):
                 return format_requirements(data["answers"][i])
 
-    return None
-
     # =================================
     # PERUBAHAN STATUS PENDIDIKAN
     # =================================
