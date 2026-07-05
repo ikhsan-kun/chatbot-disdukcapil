@@ -15,6 +15,12 @@
         Silakan isi data diri Anda secara lengkap untuk pengajuan perubahan data jenjang pendidikan terakhir.
     </p>
 
+    {% if error %}
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-weight: 600; font-size: 14.5px; text-align: left;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 24px;">
 
         <!-- SEKSI 1: DATA UTAMA PEMOHON -->
@@ -28,12 +34,14 @@
                     <label for="nik">NIK Pemohon</label>
                     <input type="text" id="nik" name="nik" placeholder="16 Digit NIK Sesuai KTP" required 
                            pattern="\d{16}" minlength="16" maxlength="16" title="NIK harus berupa 16 digit angka"
-                           oninput="this.value=this.value.replace(/\D/g,'').slice(0,16); validateNik(this);">
+                           oninput="this.value=this.value.replace(/\D/g,'').slice(0,16); validateNik(this);"
+                           value="{{ user.nik if user else '' }}" readonly style="background: var(--neutral-100); cursor: not-allowed; color: var(--neutral-500);">
                     <small id="nikWarning" class="warning-text"></small>
                 </div>
                 <div class="form-group">
                     <label for="nama">Nama Lengkap Pemohon</label>
-                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama sesuai KTP" required>
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama sesuai KTP" required
+                           value="{{ nama if nama else user.nama }}">
                 </div>
             </div>
         </div>
@@ -47,21 +55,22 @@
             <div class="form-grid-2">
                 <div class="form-group">
                     <label for="pendidikan_lama">Jenjang Pendidikan Terakhir (Lama)</label>
-                    <input type="text" id="pendidikan_lama" name="pendidikan_lama" placeholder="Contoh: SLTA / Sederajat" required>
+                    <input type="text" id="pendidikan_lama" name="pendidikan_lama" placeholder="Contoh: SLTA / Sederajat" required
+                           value="{{ pendidikan_lama if pendidikan_lama else '' }}">
                 </div>
                 <div class="form-group">
                     <label for="pendidikan_baru">Jenjang Pendidikan Terakhir (Baru)</label>
                     <select id="pendidikan_baru" name="pendidikan_baru" required>
                         <option value="">-- Pilih Jenjang Baru --</option>
-                        <option value="tidak_sekolah">Tidak/Belum Sekolah</option>
-                        <option value="belum_tamat_sd">Belum Tamat SD/Sederajat</option>
-                        <option value="tamat_sd">Tamat SD/Sederajat</option>
-                        <option value="sltp">SLTP/Sederajat</option>
-                        <option value="slta">SLTA/Sederajat</option>
-                        <option value="diploma_1_2">Diploma I/II</option>
-                        <option value="diploma_3">Akademi/Diploma III/Sarjana Muda</option>
-                        <option value="s1">Diploma IV/Strata I</option>
-                        <option value="s2">Strata II</option>
+                        <option value="tidak_sekolah" {% if pendidikan_baru == 'tidak_sekolah' %}selected{% endif %}>Tidak/Belum Sekolah</option>
+                        <option value="belum_tamat_sd" {% if pendidikan_baru == 'belum_tamat_sd' %}selected{% endif %}>Belum Tamat SD/Sederajat</option>
+                        <option value="tamat_sd" {% if pendidikan_baru == 'tamat_sd' %}selected{% endif %}>Tamat SD/Sederajat</option>
+                        <option value="sltp" {% if pendidikan_baru == 'sltp' %}selected{% endif %}>SLTP/Sederajat</option>
+                        <option value="slta" {% if pendidikan_baru == 'slta' %}selected{% endif %}>SLTA/Sederajat</option>
+                        <option value="diploma_1_2" {% if pendidikan_baru == 'diploma_1_2' %}selected{% endif %}>Diploma I/II</option>
+                        <option value="diploma_3" {% if pendidikan_baru == 'diploma_3' %}selected{% endif %}>Akademi/Diploma III/Sarjana Muda</option>
+                        <option value="s1" {% if pendidikan_baru == 's1' %}selected{% endif %}>Diploma IV/Strata I</option>
+                        <option value="s2" {% if pendidikan_baru == 's2' %}selected{% endif %}>Strata II</option>
                     </select>
                 </div>
             </div>
@@ -121,7 +130,9 @@
                     <div class="form-group" style="margin-top: 8px;">
                         <label for="file_f106" style="font-weight: 700; font-size: 13px; color: var(--neutral-700); margin-bottom: 6px; display: block;">Unggah Berkas F-1.06 yang Sudah Ditandatangani & Bermaterai (Wajib)</label>
                         <input type="file" id="file_f106" name="file_upload" accept=".jpg,.jpeg,.png,.pdf" required
+                               onchange="validateUploadSize(this)"
                                style="background: white; border: 1px solid var(--neutral-200); border-radius: var(--radius-md); padding: 8px 12px; font-size: 13.5px; width: 100%;">
+                        <small style="color: #94a3b8; font-size: 12px;">Format: JPG, JPEG, PNG, PDF &bull; Maks. 2 MB</small>
                     </div>
                 </div>
             </div>
@@ -135,9 +146,10 @@
                     </div>
                     <div id="file-container">
                         <div class="file-input-wrapper">
-                            <input type="file" name="file_upload" accept=".jpg,.jpeg,.png,.pdf">
+                            <input type="file" name="file_upload" accept=".jpg,.jpeg,.png,.pdf" onchange="validateUploadSize(this)">
                         </div>
                     </div>
+                    <small style="color: #94a3b8; font-size: 12px; display:block; margin-top:6px;">Format: JPG, JPEG, PNG, PDF &bull; Maks. 2 MB per file</small>
                     
                     <button type="button" class="btn-tambah-file" onclick="tambahFile()" 
                             style="margin-top: 14px; width: 100%; padding: 10px; background: white; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); color: var(--neutral-700); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
@@ -148,7 +160,7 @@
 
             <div class="form-group">
                 <label for="catatan">Catatan Tambahan (Opsional)</label>
-                <textarea id="catatan" name="catatan" placeholder="Tambahkan catatan pendukung jika diperlukan" style="min-height: 100px; resize: vertical;"></textarea>
+                <textarea id="catatan" name="catatan" placeholder="Tambahkan catatan pendukung jika diperlukan" style="min-height: 100px; resize: vertical;">{{ catatan if catatan else '' }}</textarea>
             </div>
         </div>
 
@@ -172,6 +184,7 @@ function tambahFile() {
     input.type = "file";
     input.name = "file_upload";
     input.accept = ".jpg,.jpeg,.png,.pdf";
+    input.onchange = function() { validateUploadSize(input); };
     
     const btnRemove = document.createElement("button");
     btnRemove.type = "button";
@@ -184,6 +197,20 @@ function tambahFile() {
     wrapper.appendChild(input);
     wrapper.appendChild(btnRemove);
     container.appendChild(wrapper);
+}
+
+// ==========================
+// VALIDASI UKURAN FILE (MAX 2 MB)
+// ==========================
+function validateUploadSize(input) {
+    if (input.files && input.files[0]) {
+        var fileSize = input.files[0].size;
+        var maxBytes = 2 * 1024 * 1024; // 2 MB
+        if (fileSize > maxBytes) {
+            alert('Ukuran berkas terlalu besar! Maksimal yang diperbolehkan adalah 2 MB.');
+            input.value = '';
+        }
+    }
 }
 
 // ==========================

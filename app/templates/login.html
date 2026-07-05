@@ -34,6 +34,7 @@
                 maxlength="16"
                 required
                 oninput="this.value=this.value.replace(/\D/g,'').slice(0,16);"
+                value="{{ nik if nik else '' }}"
             >
 
             <small id="nikWarning"
@@ -70,13 +71,6 @@
 </div>
 
 <small id="passwordWarning" class="warning-text"></small>
-
-            <!-- LUPA PASSWORD -->
-            <div style="text-align: right; margin-top: 8px; margin-bottom: 16px;">
-                <a href="/forgot-password" style="color: var(--primary); text-decoration: none; font-size: 13.5px; font-weight: 600;">
-                    Lupa Password?
-                </a>
-            </div>
 
             <!-- BUTTON -->
             <button type="submit"

@@ -16,6 +16,12 @@
         Silakan isi data keluarga Anda dengan lengkap dan benar untuk pengajuan cetak ulang Kartu Keluarga.
     </p>
 
+    {% if error %}
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 14px 18px; border-radius: 8px; margin-bottom: 24px; font-weight: 600; font-size: 14.5px; text-align: left;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 24px;">
 
         <!-- SEKSI 1: DATA UTAMA -->
@@ -29,12 +35,14 @@
                     <label for="no_kk">Nomor Kartu Keluarga (KK)</label>
                     <input type="text" id="no_kk" name="no_kk" placeholder="16 Digit Nomor KK" required pattern="\d{16}"
                         minlength="16" maxlength="16" title="Nomor KK harus berupa 16 digit angka"
-                        oninput="this.value=this.value.replace(/\D/g,'').slice(0,16); validateNoKk(this);">
+                        oninput="this.value=this.value.replace(/\D/g,'').slice(0,16); validateNoKk(this);"
+                        value="{{ no_kk if no_kk else '' }}">
                     <small id="noKkWarning" class="warning-text"></small>
                 </div>
                 <div class="form-group">
                     <label for="nama">Nama Lengkap Pemohon</label>
-                    <input type="text" id="nama" name="nama" placeholder="Sesuai nama di KK/KTP" required>
+                    <input type="text" id="nama" name="nama" placeholder="Sesuai nama di KK/KTP" required
+                        value="{{ nama if nama else user.nama }}">
                 </div>
             </div>
 
@@ -42,9 +50,9 @@
                 <label for="jenis_pengajuan">Jenis Pengajuan KK</label>
                 <select id="jenis_pengajuan" name="jenis_pengajuan" required>
                     <option value="">-- Pilih Jenis Pengajuan --</option>
-                    <option value="anggota">Perubahan Anggota Keluarga</option>
-                    <option value="alamat">Perubahan Domisili/Alamat</option>
-                    <option value="lainnya">Perubahan Lainnya (Hilang/Rusak/Lainnya)</option>
+                    <option value="anggota" {% if jenis_pengajuan == 'anggota' %}selected{% endif %}>Perubahan Anggota Keluarga</option>
+                    <option value="alamat" {% if jenis_pengajuan == 'alamat' %}selected{% endif %}>Perubahan Domisili/Alamat</option>
+                    <option value="lainnya" {% if jenis_pengajuan == 'lainnya' %}selected{% endif %}>Perubahan Lainnya (Hilang/Rusak/Lainnya)</option>
                 </select>
             </div>
         </div>
@@ -57,7 +65,8 @@
 
             <div class="form-group">
                 <label for="alamat">Nama Jalan / Blok / RT/RW / No. Rumah</label>
-                <input type="text" id="alamat" name="alamat" placeholder="Contoh: Jl. Merpati No. 12" required>
+                <input type="text" id="alamat" name="alamat" placeholder="Contoh: Jl. Merpati No. 12" required
+                    value="{{ alamat if alamat else '' }}">
             </div>
 
             <div class="form-grid-2">
@@ -76,11 +85,13 @@
             <div class="form-grid-2">
                 <div class="form-group">
                     <label for="kecamatan">Kecamatan</label>
-                    <input type="text" id="kecamatan" name="kecamatan" placeholder="Masukkan kecamatan" required>
+                    <input type="text" id="kecamatan" name="kecamatan" placeholder="Masukkan kecamatan" required
+                        value="{{ kecamatan if kecamatan else '' }}">
                 </div>
                 <div class="form-group">
                     <label for="desa">Desa / Kelurahan</label>
-                    <input type="text" id="desa" name="desa" placeholder="Masukkan desa/kelurahan" required>
+                    <input type="text" id="desa" name="desa" placeholder="Masukkan desa/kelurahan" required
+                        value="{{ desa if desa else '' }}">
                 </div>
             </div>
         </div>
@@ -153,7 +164,9 @@
                             style="font-weight: 700; font-size: 13px; color: var(--neutral-700); margin-bottom: 6px; display: block;">Unggah
                             Berkas F-1.06 yang Sudah Ditandatangani & Bermaterai (Wajib)</label>
                         <input type="file" id="file_f106" name="file_upload" accept=".jpg,.jpeg,.png,.pdf" required
+                            onchange="validateUploadSize(this)"
                             style="background: white; border: 1px solid var(--neutral-200); border-radius: var(--radius-md); padding: 8px 12px; font-size: 13.5px; width: 100%;">
+                        <small style="color: #94a3b8; font-size: 12px;">Format: JPG, JPEG, PNG, PDF &bull; Maks. 2 MB</small>
                     </div>
                 </div>
             </div>
@@ -168,9 +181,10 @@
                     </div>
                     <div id="file-container">
                         <div class="file-input-wrapper">
-                            <input type="file" name="file_upload" accept=".jpg,.jpeg,.png,.pdf">
+                            <input type="file" name="file_upload" accept=".jpg,.jpeg,.png,.pdf" onchange="validateUploadSize(this)">
                         </div>
                     </div>
+                    <small style="color: #94a3b8; font-size: 12px; display:block; margin-top:6px;">Format: JPG, JPEG, PNG, PDF &bull; Maks. 2 MB per file</small>
 
                     <button type="button" class="btn-tambah-file" onclick="tambahFile()"
                         style="margin-top: 14px; width: 100%; padding: 10px; background: white; border: 1px solid var(--neutral-300); border-radius: var(--radius-md); color: var(--neutral-700); font-weight: 600; cursor: pointer; transition: var(--transition-fast);">
@@ -179,16 +193,22 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="catatan">Catatan Tambahan (Opsional)</label>
-                <textarea id="catatan" name="catatan" placeholder="Tambahkan catatan pendukung jika diperlukan"
-                    style="min-height: 100px; resize: vertical;"></textarea>
+            <!-- Seksi 4: Catatan Pendukung -->
+            <div class="form-section" style="margin-bottom: 24px;">
+                <div class="form-section-title">
+                    <span>📝</span> Catatan Tambahan (Opsional)
+                </div>
+                <div class="form-group">
+                    <label for="catatan">Catatan Pemohon</label>
+                    <textarea id="catatan" name="catatan" placeholder="Tambahkan catatan pendukung jika diperlukan"
+                        style="min-height: 100px; resize: vertical;">{{ catatan if catatan else '' }}</textarea>
+                </div>
             </div>
-        </div>
 
-        <button type="submit" class="form-btn-submit" style="margin-top: 10px;">
-            Kirim Pengajuan Permohonan KK
-        </button>
+            <button type="submit" class="form-btn-submit" style="margin-top: 10px;">
+                Kirim Pengajuan Permohonan KK
+            </button>
+        </div>
 
     </form>
 
@@ -206,6 +226,9 @@
         input.type = "file";
         input.name = "file_upload";
         input.accept = ".jpg,.jpeg,.png,.pdf";
+        input.onchange = function() {
+            validateUploadSize(input);
+        };
 
         const btnRemove = document.createElement("button");
         btnRemove.type = "button";
@@ -229,6 +252,20 @@
             warning.innerText = "⚠️ Nomor KK harus 16 digit (saat ini " + el.value.length + " digit)";
         } else {
             warning.innerText = "";
+        }
+    }
+
+    // ==========================
+    // VALIDASI UKURAN FILE (MAX 2MB)
+    // ==========================
+    function validateUploadSize(input) {
+        if (input.files && input.files[0]) {
+            var fileSize = input.files[0].size;
+            var maxBytes = 2 * 1024 * 1024; // 2MB
+            if (fileSize > maxBytes) {
+                alert("Ukuran berkas terlalu besar! Maksimal ukuran berkas yang diperbolehkan adalah 2 MB.");
+                input.value = ""; // Reset
+            }
         }
     }
 

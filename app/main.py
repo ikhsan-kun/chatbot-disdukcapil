@@ -11,9 +11,9 @@ import os
 import uuid
 import bcrypt
 import pymysql
-import time
 from dotenv import load_dotenv
 
+# Load environment variables dari file .env (termasuk GEMINI_API_KEY)
 load_dotenv()
 
 from database import engine
@@ -22,27 +22,30 @@ from pydantic import BaseModel
 # Import fungsi chatbot AI kita
 from app.chatbot.chatbot_ai import chatbot_response
 
-# ============================================================
-# RATE LIMITING – Forgot Password (in-memory, per NIK)
-# ============================================================
-_pw_reset_attempts: dict = {}   # {nik: [count, first_timestamp]}
-PW_RESET_MAX = 3
-PW_RESET_WINDOW = 900           # 15 menit
-
 def get_db():
     return pymysql.connect(
         host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "supercaps"),
-        password=os.getenv("DB_PASSWORD", "supercaps"),
-        database=os.getenv("DB_NAME", "disdukcapil_ta"),
+        user=os.getenv("DB_USER", "root"),
+        password=os.getenv("DB_PASSWORD", ""),
+        database=os.getenv("DB_NAME", "disdukcapil_TA"),
         cursorclass=pymysql.cursors.DictCursor
     )
 
+def is_allowed_file(filename: str, allowed_extensions: set) -> bool:
+    if not filename or filename.strip() == "":
+        return True
+    _, ext = os.path.splitext(filename)
+    return ext.lower() in allowed_extensions
+
+ALLOWED_IMAGES = {".jpg", ".jpeg", ".png"}
+ALLOWED_DOCUMENTS = {".jpg", ".jpeg", ".png", ".pdf"}
+
+# KONFIGURASI BATAS UKURAN FILE (Dalam Megabytes)
+MAX_FILE_SIZE_MB = 2
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+
 app = FastAPI()
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=os.getenv("SESSION_SECRET_KEY", "dev-fallback-key-change-in-production")
-)
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET_KEY", "secret123"))
 
 # Download template F-1.06 secara otomatis jika belum tersedia
 import urllib.request
@@ -348,9 +351,6 @@ async def pengajuan(request: Request):
 
 @app.get("/pengajuan-kk", response_class=HTMLResponse)
 async def pengajuan_kk(request: Request):
-    # Fix Bug #7: wajib login sebelum melihat form
-    if not request.session.get("user"):
-        return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(
         request=request,
         name="form_kk.html",
@@ -384,6 +384,43 @@ async def submit_kk(
 
     if not user:
         return RedirectResponse("/login", status_code=303)
+
+    # Validasi format dan ukuran file upload
+    if file_upload:
+        for file in file_upload:
+            if file.filename != "":
+                if not is_allowed_file(file.filename, ALLOWED_DOCUMENTS):
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="form_kk.html",
+                        context={
+                            "user": user,
+                            "error": f"Format file '{file.filename}' tidak valid. Hanya menerima file JPG, JPEG, PNG, atau PDF.",
+                            "no_kk": no_kk,
+                            "nama": nama,
+                            "jenis_pengajuan": jenis_pengajuan,
+                            "alamat": alamat,
+                            "kecamatan": kecamatan,
+                            "desa": desa,
+                            "catatan": catatan
+                        }
+                    )
+                if file.size > MAX_FILE_SIZE_BYTES:
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="form_kk.html",
+                        context={
+                            "user": user,
+                            "error": f"Ukuran file '{file.filename}' terlalu besar. Maksimal {MAX_FILE_SIZE_MB} MB.",
+                            "no_kk": no_kk,
+                            "nama": nama,
+                            "jenis_pengajuan": jenis_pengajuan,
+                            "alamat": alamat,
+                            "kecamatan": kecamatan,
+                            "desa": desa,
+                            "catatan": catatan
+                        }
+                    )
 
     # simpan pengajuan
     with engine.connect() as conn:
@@ -450,40 +487,39 @@ async def submit_kk(
 
         os.makedirs(upload_folder, exist_ok=True)
 
-        # Fix Bug #6: cek None sebelum iterasi file_upload
-        if file_upload:
-            for file in file_upload:
+        # simpan semua file
+        for file in file_upload:
 
-                if file.filename != "":
+            if file.filename != "":
 
-                    filename = f"{uuid.uuid4()}_{file.filename}"
+                filename = f"{uuid.uuid4()}_{file.filename}"
 
-                    file_path = os.path.join(upload_folder, filename)
+                file_path = os.path.join(upload_folder, filename)
 
-                    with open(file_path, "wb") as buffer:
-                        shutil.copyfileobj(file.file, buffer)
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
 
-                    conn.execute(
+                conn.execute(
 
-                        text("""
-                            INSERT INTO dokumen_pengajuan
-                            (
-                                pengajuan_id,
-                                nama_file
-                            )
-                            VALUES
-                            (
-                                :pengajuan_id,
-                                :nama_file
-                            )
-                        """),
+                    text("""
+                        INSERT INTO dokumen_pengajuan
+                        (
+                            pengajuan_id,
+                            nama_file
+                        )
+                        VALUES
+                        (
+                            :pengajuan_id,
+                            :nama_file
+                        )
+                    """),
 
-                        {
-                            "pengajuan_id": pengajuan_id,
-                            "nama_file": filename
-                        }
+                    {
+                        "pengajuan_id": pengajuan_id,
+                        "nama_file": filename
+                    }
 
-                    )
+                )
 
         conn.commit()
 
@@ -506,6 +542,37 @@ async def submit_pendidikan(
 
     if not user:
         return RedirectResponse("/login", status_code=303)
+
+    # Validasi format dan ukuran file upload
+    if file_upload:
+        for file in file_upload:
+            if file.filename != "":
+                if not is_allowed_file(file.filename, ALLOWED_DOCUMENTS):
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="form_pendidikan.html",
+                        context={
+                            "user": user,
+                            "error": f"Format file '{file.filename}' tidak valid. Hanya menerima file JPG, JPEG, PNG, atau PDF.",
+                            "nama": nama,
+                            "pendidikan_lama": pendidikan_lama,
+                            "pendidikan_baru": pendidikan_baru,
+                            "catatan": catatan
+                        }
+                    )
+                if file.size > MAX_FILE_SIZE_BYTES:
+                    return templates.TemplateResponse(
+                        request=request,
+                        name="form_pendidikan.html",
+                        context={
+                            "user": user,
+                            "error": f"Ukuran file '{file.filename}' terlalu besar. Maksimal {MAX_FILE_SIZE_MB} MB.",
+                            "nama": nama,
+                            "pendidikan_lama": pendidikan_lama,
+                            "pendidikan_baru": pendidikan_baru,
+                            "catatan": catatan
+                        }
+                    )
 
     with engine.connect() as conn:
 
@@ -589,9 +656,6 @@ async def submit_pendidikan(
 
 @app.get("/pengajuan-pendidikan", response_class=HTMLResponse)
 async def pengajuan_pendidikan(request: Request):
-    # Fix Bug #7: wajib login sebelum melihat form
-    if not request.session.get("user"):
-        return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(
         request=request,
         name="form_pendidikan.html",
@@ -704,95 +768,16 @@ async def process_login(
         return templates.TemplateResponse(
             request=request,
             name="login.html",
-            context={"error": "NIK atau password salah. Silakan coba lagi."}
+            context={
+                "error": "NIK atau password salah. Silakan coba lagi.",
+                "nik": nik
+            }
         )
 
-@app.get("/forgot-password", response_class=HTMLResponse)
-async def forgot_password_page(request: Request):
-    return templates.TemplateResponse(
-        request=request,
-        name="forgot_password.html",
-        context={}
-    )
-
-@app.post("/forgot-password")
-async def process_forgot_password(
-    request: Request,
-    nik: str = Form(...),
-    new_password: str = Form(...),
-    confirm_new_password: str = Form(...)
-):
-    # ── Fix Bug #10: Rate limiting (maks 3x per 15 menit per NIK) ──
-    now = time.time()
-    entry = _pw_reset_attempts.get(nik)
-    if entry:
-        count, first_ts = entry
-        if now - first_ts > PW_RESET_WINDOW:
-            # Window sudah lewat, reset counter
-            _pw_reset_attempts[nik] = [1, now]
-        elif count >= PW_RESET_MAX:
-            sisa_menit = int((PW_RESET_WINDOW - (now - first_ts)) / 60) + 1
-            return templates.TemplateResponse(
-                request=request,
-                name="forgot_password.html",
-                context={"error": f"Terlalu banyak percobaan. Coba lagi dalam {sisa_menit} menit."}
-            )
-        else:
-            _pw_reset_attempts[nik][0] += 1
-    else:
-        _pw_reset_attempts[nik] = [1, now]
-    # ── End rate limiting ──
-
-    if not nik.startswith("3376"):
-        return templates.TemplateResponse(
-            request=request,
-            name="forgot_password.html",
-            context={"error": "Pengisian NIK harus diawali 3376"}
-        )
-
-    if new_password != confirm_new_password:
-        return templates.TemplateResponse(
-            request=request,
-            name="forgot_password.html",
-            context={"error": "Konfirmasi password baru tidak cocok"}
-        )
-
-    if len(new_password) < 6:
-        return templates.TemplateResponse(
-            request=request,
-            name="forgot_password.html",
-            context={"error": "Password baru minimal 6 karakter"}
-        )
-
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE nik = %s", (nik,))
-    user = cursor.fetchone()
-
-    if not user:
-        conn.close()
-        return templates.TemplateResponse(
-            request=request,
-            name="forgot_password.html",
-            context={"error": "NIK tidak terdaftar"}
-        )
-
-    hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    cursor.execute("UPDATE users SET password = %s WHERE nik = %s", (hashed_pw, nik))
-    conn.commit()
-    conn.close()
-
-    # Reset counter setelah berhasil
-    _pw_reset_attempts.pop(nik, None)
-
-    return templates.TemplateResponse(
-        request=request,
-        name="forgot_password.html",
-        context={"success": "Password berhasil diubah. Silakan masuk dengan password baru."}
-    )
 
 @app.post("/register")
 async def process_register(
+    request: Request,
     nik: str = Form(...),
     nama: str = Form(...),
     email: str = Form(...),
@@ -800,10 +785,40 @@ async def process_register(
     confirm_password: str = Form(...)
 ):
     if not nik.startswith("3376"):
-        return RedirectResponse("/register", status_code=303)
+        return templates.TemplateResponse(
+            request=request,
+            name="register.html",
+            context={
+                "error": "Pendaftaran hanya dibuka untuk warga Kota Tegal (NIK diawali 3376).",
+                "nik": nik,
+                "nama": nama,
+                "email": email
+            }
+        )
 
     if password != confirm_password:
-        return RedirectResponse("/register", status_code=303)
+        return templates.TemplateResponse(
+            request=request,
+            name="register.html",
+            context={
+                "error": "Konfirmasi password tidak cocok.",
+                "nik": nik,
+                "nama": nama,
+                "email": email
+            }
+        )
+
+    if len(password) < 6:
+        return templates.TemplateResponse(
+            request=request,
+            name="register.html",
+            context={
+                "error": "Password minimal 6 karakter.",
+                "nik": nik,
+                "nama": nama,
+                "email": email
+            }
+        )
 
     with engine.connect() as conn:
         check_user = conn.execute(
@@ -815,7 +830,16 @@ async def process_register(
         ).fetchone()
 
         if check_user:
-            return RedirectResponse("/register", status_code=303)
+            return templates.TemplateResponse(
+                request=request,
+                name="register.html",
+                context={
+                    "error": "NIK atau Email sudah terdaftar.",
+                    "nik": nik,
+                    "nama": nama,
+                    "email": email
+                }
+            )
 
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
@@ -936,6 +960,25 @@ async def proses_pengajuan(
     filename = None
 
     if file_admin and file_admin.filename != "":
+        if not is_allowed_file(file_admin.filename, ALLOWED_DOCUMENTS):
+            return HTMLResponse("Format file tidak valid. Hanya menerima file JPG, JPEG, PNG, atau PDF.", status_code=400)
+        if file_admin.size > MAX_FILE_SIZE_BYTES:
+            return HTMLResponse(f"Ukuran file terlalu besar. Maksimal {MAX_FILE_SIZE_MB} MB.", status_code=400)
+
+        # Hapus file balasan lama dari disk jika ada
+        with engine.connect() as conn:
+            old_file_result = conn.execute(
+                text("SELECT file_balasan FROM pengajuan WHERE id = :id"),
+                {"id": id}
+            ).fetchone()
+            if old_file_result and old_file_result[0]:
+                old_file_path = os.path.join("static/uploads", old_file_result[0])
+                if os.path.exists(old_file_path):
+                    try:
+                        os.remove(old_file_path)
+                    except Exception as e:
+                        print(f"Gagal menghapus file balasan lama: {e}")
+
         upload_folder = "static/uploads"
         os.makedirs(upload_folder, exist_ok=True)
 
@@ -1041,36 +1084,13 @@ async def update_profile(
     old_password: Optional[str] = Form(None),
     new_password: Optional[str] = Form(None),
     confirm_new_password: Optional[str] = Form(None),
-    foto_profile: UploadFile = File(None)
+    foto_profile: UploadFile = File(None),
+    hapus_foto: Optional[str] = Form(None)
 ):
     user = request.session.get("user")
 
     if not user:
         return RedirectResponse("/login", status_code=303)
-
-    # Preserve user inputted values on error response
-    temp_user = {
-        "id": user["id"],
-        "nik": user["nik"],
-        "nama": nama,
-        "email": email,
-        "role": user["role"],
-        "foto_profile": user["foto_profile"]
-    }
-
-    # 1. Cek duplikasi email ke user lain
-    conn_db = get_db()
-    cursor_db = conn_db.cursor()
-    cursor_db.execute("SELECT id FROM users WHERE email = %s AND id != %s", (email, user["id"]))
-    existing_user_email = cursor_db.fetchone()
-    conn_db.close()
-
-    if existing_user_email:
-        return templates.TemplateResponse(
-            request=request,
-            name="edit_profile.html",
-            context={"user": temp_user, "error": "Email sudah digunakan oleh pengguna lain"}
-        )
 
     old_password = old_password.strip() if old_password else ""
     new_password = new_password.strip() if new_password else ""
@@ -1084,21 +1104,21 @@ async def update_profile(
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": temp_user, "error": "Mohon lengkapi seluruh field password jika ingin mengubah password"}
+                context={"user": user, "error": "Mohon lengkapi seluruh field password jika ingin mengubah password"}
             )
         
         if new_password != confirm_new_password:
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": temp_user, "error": "Konfirmasi password baru tidak cocok"}
+                context={"user": user, "error": "Konfirmasi password baru tidak cocok"}
             )
             
         if len(new_password) < 6:
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": temp_user, "error": "Password baru minimal 6 karakter"}
+                context={"user": user, "error": "Password baru minimal 6 karakter"}
             )
             
         conn_check = get_db()
@@ -1111,7 +1131,7 @@ async def update_profile(
             return templates.TemplateResponse(
                 request=request,
                 name="edit_profile.html",
-                context={"user": temp_user, "error": "Password lama tidak sesuai"}
+                context={"user": user, "error": "Password lama tidak sesuai"}
             )
             
         hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -1119,7 +1139,41 @@ async def update_profile(
 
     filename = user.get("foto_profile")
 
-    if foto_profile and foto_profile.filename != "":
+    if hapus_foto == "true":
+        # Hapus file lama dari disk jika ada
+        if filename:
+            old_path = os.path.join("static/uploads", filename)
+            if os.path.exists(old_path):
+                try:
+                    os.remove(old_path)
+                except Exception as e:
+                    print(f"Gagal menghapus file profil lama: {e}")
+        filename = None
+
+    elif foto_profile and foto_profile.filename != "":
+        if not is_allowed_file(foto_profile.filename, ALLOWED_IMAGES):
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": "Format file foto profil tidak valid. Hanya menerima file JPG, JPEG, atau PNG."}
+            )
+        if foto_profile.size > MAX_FILE_SIZE_BYTES:
+            return templates.TemplateResponse(
+                request=request,
+                name="edit_profile.html",
+                context={"user": user, "error": f"Ukuran file foto profil terlalu besar. Maksimal {MAX_FILE_SIZE_MB} MB."}
+            )
+
+        # Hapus file lama dari disk jika ada sebelum mengupload yang baru
+        old_filename = user.get("foto_profile")
+        if old_filename:
+            old_path = os.path.join("static/uploads", old_filename)
+            if os.path.exists(old_path):
+                try:
+                    os.remove(old_path)
+                except Exception as e:
+                    print(f"Gagal menghapus file profil lama: {e}")
+
         upload_folder = "static/uploads"
         os.makedirs(upload_folder, exist_ok=True)
 
@@ -1351,11 +1405,7 @@ def admin_layanan(request: Request):
     )
 
 @app.get("/admin/layanan/hapus/{id}")
-def hapus_layanan(request: Request, id: int):
-    # Fix Bug #4: wajib admin
-    user = request.session.get("user")
-    if not user or user["role"] != "admin":
-        return RedirectResponse("/dashboard", status_code=303)
+def hapus_layanan(id: int):
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1367,10 +1417,8 @@ def hapus_layanan(request: Request, id: int):
 
 @app.get("/admin/layanan/edit/{id}")
 def edit_layanan(request: Request, id: int):
-    # Fix Bug #5: wajib admin
+
     user = request.session.get("user")
-    if not user or user["role"] != "admin":
-        return RedirectResponse("/dashboard", status_code=303)
 
     conn = get_db()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -1389,16 +1437,11 @@ def edit_layanan(request: Request, id: int):
 
 @app.post("/admin/layanan/update/{id}")
 def update_layanan(
-    request: Request,
     id: int,
     judul: str = Form(...),
     waktu_proses: str = Form(...),
     deskripsi: str = Form(...)
 ):
-    # Fix Bug #5: wajib admin
-    user = request.session.get("user")
-    if not user or user["role"] != "admin":
-        return RedirectResponse("/dashboard", status_code=303)
 
     conn = get_db()
     cursor = conn.cursor()
@@ -1417,10 +1460,6 @@ def update_layanan(
 
 @app.post("/admin/layanan/tambah")
 async def tambah_layanan_post(request: Request):
-    # Fix: wajib admin
-    user = request.session.get("user")
-    if not user or user["role"] != "admin":
-        return RedirectResponse("/dashboard", status_code=303)
 
     form = await request.form()
 
@@ -1443,10 +1482,8 @@ async def tambah_layanan_post(request: Request):
 
 @app.get("/admin/layanan/tambah")
 def tambah_layanan_get(request: Request):
-    # Fix: wajib admin
+
     user = request.session.get("user")
-    if not user or user["role"] != "admin":
-        return RedirectResponse("/dashboard", status_code=303)
 
     return templates.TemplateResponse(
         request=request,
@@ -1455,3 +1492,141 @@ def tambah_layanan_get(request: Request):
             "user": user
         }
     )
+
+# =============================================
+# DATA USER
+# =============================================
+
+@app.get("/admin/users", response_class=HTMLResponse)
+def admin_users(request: Request, q: str = None):
+
+    user = request.session.get("user")
+
+    if not user or user["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
+
+    conn = get_db()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+    if q and q.strip():
+        like_q = f"%{q.strip()}%"
+        cursor.execute(
+            "SELECT id, nik, nama, email, role FROM users WHERE nik LIKE %s OR nama LIKE %s OR email LIKE %s ORDER BY id ASC",
+            (like_q, like_q, like_q)
+        )
+    else:
+        cursor.execute("SELECT id, nik, nama, email, role FROM users ORDER BY id ASC")
+
+    users = cursor.fetchall()
+    conn.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_users.html",
+        context={
+            "user": user,
+            "users": users,
+            "q": q
+        }
+    )
+
+@app.post("/admin/users/edit")
+def edit_user(
+    request: Request,
+    user_id: int = Form(...),
+    nik: str = Form(...),
+    nama: str = Form(...),
+    email: str = Form(...),
+    new_password: Optional[str] = Form(None),
+    confirm_new_password: Optional[str] = Form(None)
+):
+    admin = request.session.get("user")
+
+    if not admin or admin["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
+
+    new_password = new_password.strip() if new_password else ""
+    confirm_new_password = confirm_new_password.strip() if confirm_new_password else ""
+
+    # Jika admin mengisi password baru, validasi dan hash
+    hashed_pw = None
+    if new_password:
+        if new_password != confirm_new_password:
+            return templates.TemplateResponse(
+                request=request,
+                name="admin_users.html",
+                context={
+                    "user": admin,
+                    "users": _get_all_users(),
+                    "q": None,
+                    "error": "Konfirmasi password baru tidak cocok."
+                }
+            )
+        if len(new_password) < 6:
+            return templates.TemplateResponse(
+                request=request,
+                name="admin_users.html",
+                context={
+                    "user": admin,
+                    "users": _get_all_users(),
+                    "q": None,
+                    "error": "Password baru minimal 6 karakter."
+                }
+            )
+        hashed_pw = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if hashed_pw:
+        cursor.execute(
+            "UPDATE users SET nik=%s, nama=%s, email=%s, password=%s WHERE id=%s",
+            (nik, nama, email, hashed_pw, user_id)
+        )
+    else:
+        cursor.execute(
+            "UPDATE users SET nik=%s, nama=%s, email=%s WHERE id=%s",
+            (nik, nama, email, user_id)
+        )
+
+    conn.commit()
+    conn.close()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin_users.html",
+        context={
+            "user": admin,
+            "users": _get_all_users(),
+            "q": None,
+            "success": f"Data user \"{nama}\" berhasil diperbarui."
+        }
+    )
+
+@app.get("/admin/users/hapus/{user_id}")
+def hapus_user(request: Request, user_id: int):
+
+    admin = request.session.get("user")
+
+    if not admin or admin["role"] != "admin":
+        return RedirectResponse("/dashboard", status_code=303)
+
+    # Tidak boleh hapus akun sendiri
+    if admin["id"] == user_id:
+        return RedirectResponse("/admin/users", status_code=303)
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+    conn.commit()
+    conn.close()
+
+    return RedirectResponse("/admin/users", status_code=303)
+
+def _get_all_users():
+    conn = get_db()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute("SELECT id, nik, nama, email, role FROM users ORDER BY id ASC")
+    users = cursor.fetchall()
+    conn.close()
+    return users

@@ -12,20 +12,22 @@
 
     <div class="filter-box">
 
-<form method="GET" action="/admin/pengajuan" class="filter-form">
+<form method="GET" action="/admin/pengajuan" class="filter-form" onsubmit="event.preventDefault();">
 
     <!-- SEARCH NIK -->
     <div class="search-box">
 
         <input type="text"
+               id="pengajuanSearchInput"
                name="nik"
                placeholder="Cari berdasarkan NIK..."
+               oninput="filterPengajuanTable()"
                value="{{ nik_selected if nik_selected else '' }}">
 
     </div>
 
     <!-- FILTER STATUS -->
-    <select name="status">
+    <select name="status" id="pengajuanStatusSelect" onchange="filterPengajuanTable()">
 
         <option value="Semua">Semua Status</option>
 
@@ -56,8 +58,8 @@
 
     </select>
 
-    <button type="submit" class="btn-filter">
-        Cari
+    <button type="button" id="clearPengajuanSearch" onclick="clearPengajuanFilters()" class="btn-filter" style="background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;display:none;">
+        Reset
     </button>
 
 </form>
@@ -78,13 +80,13 @@
         </tr>
     </thead>
 
-    <tbody>
+    <tbody id="pengajuanTableBody">
 
     {% for item in pengajuan %}
 
-        <tr>
+        <tr class="pengajuan-row">
 
-            <td>{{ item.nik }}</td>
+            <td class="row-nik">{{ item.nik }}</td>
 
             <td class="layanan">
                 {{ item.jenis_layanan }}
@@ -95,7 +97,7 @@
             </td>
 
             <td>
-                <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">
+                <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }} row-status">
                     {{ item.status }}
                 </span>
             </td>
@@ -112,6 +114,11 @@
         </tr>
 
     {% endfor %}
+        <tr id="noPengajuanRow" style="display:none;">
+            <td colspan="5" style="text-align:center; padding: 48px; color: #94a3b8; font-size:15px;">
+                😕 Tidak ada pengajuan yang ditemukan
+            </td>
+        </tr>
 
     </tbody>
 
@@ -120,5 +127,55 @@
 </div>
 
 </div>
+
+<script>
+function filterPengajuanTable() {
+    var nikQuery = document.getElementById('pengajuanSearchInput').value.toLowerCase().trim();
+    var statusQuery = document.getElementById('pengajuanStatusSelect').value;
+    var rows = document.querySelectorAll('#pengajuanTableBody .pengajuan-row');
+    var noPengajuanRow = document.getElementById('noPengajuanRow');
+    var resetBtn = document.getElementById('clearPengajuanSearch');
+    var visibleCount = 0;
+
+    rows.forEach(function(row) {
+        var nik = row.querySelector('.row-nik').textContent.toLowerCase();
+        var status = row.querySelector('.row-status').textContent.trim();
+
+        var matchesNik = (nik.indexOf(nikQuery) > -1);
+        var matchesStatus = (statusQuery === 'Semua' || status === statusQuery);
+
+        if (matchesNik && matchesStatus) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    if (visibleCount === 0) {
+        noPengajuanRow.style.display = '';
+    } else {
+        noPengajuanRow.style.display = 'none';
+    }
+
+    if (nikQuery.length > 0 || statusQuery !== 'Semua') {
+        resetBtn.style.display = 'inline-block';
+    } else {
+        resetBtn.style.display = 'none';
+    }
+}
+
+function clearPengajuanFilters() {
+    document.getElementById('pengajuanSearchInput').value = '';
+    document.getElementById('pengajuanStatusSelect').value = 'Semua';
+    filterPengajuanTable();
+    document.getElementById('pengajuanSearchInput').focus();
+}
+
+// Jalankan filter saat halaman selesai loading jika ada nilai filter default
+document.addEventListener('DOMContentLoaded', function() {
+    filterPengajuanTable();
+});
+</script>
 
 {% endblock %}

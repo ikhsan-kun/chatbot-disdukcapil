@@ -3,6 +3,10 @@ import pickle
 import numpy as np
 import os
 import re
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # =============================================
 # KONFIGURASI PATH LOKAL
@@ -198,6 +202,65 @@ def direct_match(question):
     return None
 
 # =============================================
+# LOGIKA GENERATION (RAG) MENGGUNAKAN GEMINI API
+# =============================================
+def generate_rag_response(question, context):
+    import time
+    from google import genai
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return None
+
+    client = genai.Client(api_key=api_key)
+
+    prompt = f"""Anda adalah asisten virtual resmi chatbot Disdukcapil Kota Tegal yang ramah, sopan, dan profesional.
+
+Tugas Anda adalah menjawab pertanyaan warga HANYA berdasarkan informasi yang ada pada KONTEKS di bawah ini.
+
+Aturan WAJIB:
+1. Selalu mulai jawaban dengan sapaan singkat seperti "Halo!" atau "Tentu!".
+2. Jika jawaban berisi daftar persyaratan atau langkah prosedur, WAJIB tampilkan dalam format poin bernomor (1. 2. 3. dst).
+3. Akhiri jawaban dengan kalimat penutup yang menawarkan bantuan lanjutan, contoh: "Apakah ada yang ingin ditanyakan lagi?"
+4. HANYA gunakan informasi dari KONTEKS. Jangan mengarang fakta di luar konteks.
+5. Jika informasi tidak ditemukan dalam KONTEKS, jawab: "Maaf, informasi tersebut belum tersedia pada sistem kami. Silakan ketik 'menu' untuk melihat layanan yang tersedia."
+
+======================
+KONTEKS
+======================
+{context}
+
+======================
+PERTANYAAN WARGA
+======================
+{question}
+
+======================
+JAWABAN ANDA
+======================""";
+
+    # Retry otomatis hingga 3 kali jika terkena rate limit (429)
+    for attempt in range(3):
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            if response.text:
+                return response.text.strip()
+            return None
+        except Exception as e:
+            error_str = str(e)
+            if "429" in error_str and attempt < 2:
+                # Rate limit — tunggu sebentar lalu coba lagi
+                wait_seconds = 5 * (attempt + 1)  # 5s, 10s
+                print(f"Rate limit Gemini, menunggu {wait_seconds}s sebelum retry ({attempt+1}/2)...")
+                time.sleep(wait_seconds)
+            else:
+                print(f"Gagal generate respons RAG menggunakan Gemini: {e}")
+                return None
+    return None
+# =============================================
 # FUNCTION CHATBOT
 # =============================================
 def chatbot_response(question):
@@ -240,8 +303,8 @@ def chatbot_response(question):
 
     D, I = index.search(embedding, k=3)
 
-    for idx in I[0]:
-        print(data["questions"][idx])
+    for idx_val in I[0]:
+        print(data["questions"][idx_val])
 
     idx = int(I[0][0])
     distance = float(D[0][0])
@@ -258,8 +321,24 @@ def chatbot_response(question):
             "Silakan ketik 'menu' untuk melihat layanan yang tersedia."
         )
 
-    jawaban = data["answers"][idx]
+    # --- PROSES RAG (Retrieve Konteks dari Top-3 FAISS) ---
+    context_list = []
+    for rank, idx_val in enumerate(I[0]):
+        dist = float(D[0][rank])
+        if idx_val >= 0 and dist <= MAX_DISTANCE:
+            q_text = data["questions"][idx_val]
+            a_text = data["answers"][idx_val]
+            context_list.append(f"- Pertanyaan: {q_text}\n  Jawaban: {a_text}")
 
+    if context_list:
+        context = "\n\n".join(context_list)
+        # Panggil generator Gemini untuk menulis jawaban baru (RAG)
+        rag_jawaban = generate_rag_response(question, context)
+        if rag_jawaban is not None and rag_jawaban.strip() != "":
+            return rag_jawaban
+
+    # --- FALLBACK (Jika Gemini API gagal atau tidak ada API Key) ---
+    jawaban = data["answers"][idx]
     return format_requirements(jawaban)
 
 

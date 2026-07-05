@@ -219,10 +219,10 @@ function formatMessageContent(rawText) {
     // Bersihkan karakter berlebih
     let text = rawText.trim();
 
-    // 1. Format Bold (**bold text** atau *bold text*)
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    text = text.replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-    text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    // 1. Format Bold & Italic (prevent matching across lines or matching list bullets)
+    text = text.replace(/\*\*(?!\s)([^\*\n]+?)(?<!\s)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*(?!\s)([^\*\n]+?)(?<!\s)\*/g, '<strong>$1</strong>');
+    text = text.replace(/__(?!\s)([^_\n]+?)(?<!\s)__/g, '<strong>$1</strong>');
 
     // 2. Format Bullet List (baris diawali "- " atau "* ")
     const lines = text.split("\n");

@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-hero">
+    <div class="container">
+        <h1>Data User</h1>
+        <p>Kelola semua akun pengguna yang terdaftar</p>
+    </div>
+</section>
+
+<div class="container" style="padding: 32px 16px;">
+
+    {% if success %}
+    <div style="background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;padding:12px 18px;border-radius:10px;margin-bottom:20px;font-weight:600;display:flex;align-items:center;gap:8px;">
+        ✅ {{ success }}
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div style="background:#fee2e2;border:1px solid #fca5a5;color:#b91c1c;padding:12px 18px;border-radius:10px;margin-bottom:20px;font-weight:600;display:flex;align-items:center;gap:8px;">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- SEARCH & INFO -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="font-size:15px;color:#64748b;font-weight:500;">
+            Total <strong style="color:#1e293b;" id="totalCountText">{{ users|length }}</strong> pengguna terdaftar
+        </div>
+        <form method="GET" action="/admin/users" style="display:flex;gap:8px;" onsubmit="event.preventDefault();">
+            <input
+                type="text"
+                id="userSearchInput"
+                name="q"
+                value="{{ q or '' }}"
+                placeholder="🔍 Cari nama / NIK / email..."
+                style="padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;width:260px;outline:none;transition:border .2s;"
+                onfocus="this.style.borderColor='#4f8cff'"
+                onblur="this.style.borderColor='#e2e8f0'"
+                oninput="filterUsersTable()"
+            >
+            <button type="button" id="clearUserSearch" onclick="clearUserSearchField()" style="padding:9px 18px;background:#f1f5f9;color:#475569;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:none;">Clear</button>
+        </form>
+    </div>
+
+    <!-- TABEL USER -->
+    <div style="background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.07);overflow:hidden;">
+        <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;min-width:700px;">
+                <thead>
+                    <tr style="background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;">
+                        <th style="padding:14px 18px;text-align:left;font-size:13px;font-weight:600;letter-spacing:.5px;">No</th>
+                        <th style="padding:14px 18px;text-align:left;font-size:13px;font-weight:600;letter-spacing:.5px;">NIK</th>
+                        <th style="padding:14px 18px;text-align:left;font-size:13px;font-weight:600;letter-spacing:.5px;">Nama</th>
+                        <th style="padding:14px 18px;text-align:left;font-size:13px;font-weight:600;letter-spacing:.5px;">Email</th>
+                        <th style="padding:14px 18px;text-align:center;font-size:13px;font-weight:600;letter-spacing:.5px;">Role</th>
+                        <th style="padding:14px 18px;text-align:center;font-size:13px;font-weight:600;letter-spacing:.5px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    {% for u in users %}
+                    <tr class="user-row" style="border-bottom:1px solid #f1f5f9;transition:background .15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                        <td style="padding:13px 18px;font-size:14px;color:#64748b;font-weight:500;" class="row-num">{{ loop.index }}</td>
+                        <td style="padding:13px 18px;font-size:14px;color:#1e293b;font-family:monospace;letter-spacing:.5px;" class="row-nik">{{ u.nik }}</td>
+                        <td style="padding:13px 18px;font-size:14px;color:#1e293b;font-weight:600;" class="row-nama">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4f8cff,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;">
+                                    {{ u.nama[0]|upper }}
+                                </div>
+                                {{ u.nama }}
+                            </div>
+                        </td>
+                        <td style="padding:13px 18px;font-size:14px;color:#475569;" class="row-email">{{ u.email }}</td>
+                        <td style="padding:13px 18px;text-align:center;" class="row-role">
+                            {% if u.role == 'admin' %}
+                            <span style="background:#ede9fe;color:#7c3aed;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">👑 Admin</span>
+                            {% else %}
+                            <span style="background:#dbeafe;color:#1d4ed8;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">👤 User</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding:13px 18px;text-align:center;">
+                            <div style="display:flex;gap:8px;justify-content:center;">
+                                <button onclick="openEditModal({{ u.id }}, '{{ u.nama }}', '{{ u.email }}', '{{ u.nik }}', '{{ u.role }}')"
+                                    style="padding:6px 14px;background:#4f8cff;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;"
+                                    onmouseover="this.style.background='#2563eb'"
+                                    onmouseout="this.style.background='#4f8cff'">
+                                    ✏️ Edit
+                                </button>
+                                {% if u.id != user.id %}
+                                <button onclick="confirmHapus({{ u.id }}, '{{ u.nama }}')"
+                                    style="padding:6px 14px;background:#fee2e2;color:#b91c1c;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;"
+                                    onmouseover="this.style.background='#fca5a5'"
+                                    onmouseout="this.style.background='#fee2e2'">
+                                    🗑️ Hapus
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr id="noUserRow" style="display:none;">
+                        <td colspan="6" style="padding:48px;text-align:center;color:#94a3b8;font-size:15px;">
+                            😕 Tidak ada user yang ditemukan
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDIT USER -->
+<div id="modalEditUser" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:500px;box-shadow:0 8px 40px rgba(0,0,0,.2);position:relative;max-height:90vh;overflow-y:auto;">
+        <button onclick="closeEditModal()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;">✖</button>
+        <h2 style="margin:0 0 6px;font-size:20px;color:#1e293b;">Edit Data User</h2>
+        <p style="margin:0 0 24px;color:#64748b;font-size:14px;">Ubah informasi pengguna di bawah ini</p>
+
+        <form id="formEditUser" method="POST" action="/admin/users/edit">
+            <input type="hidden" name="user_id" id="editUserId">
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">NIK</label>
+            <input type="text" id="editNik" name="nik" maxlength="16"
+                style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;margin-bottom:16px;outline:none;"
+                onfocus="this.style.borderColor='#4f8cff'" onblur="this.style.borderColor='#e2e8f0'"
+                required>
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Nama</label>
+            <input type="text" id="editNama" name="nama"
+                style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;margin-bottom:16px;outline:none;"
+                onfocus="this.style.borderColor='#4f8cff'" onblur="this.style.borderColor='#e2e8f0'"
+                required>
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Email</label>
+            <input type="email" id="editEmail" name="email"
+                style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;margin-bottom:16px;outline:none;"
+                onfocus="this.style.borderColor='#4f8cff'" onblur="this.style.borderColor='#e2e8f0'"
+                required>
+
+            <!-- DIVIDER PASSWORD -->
+            <div style="border-top:1.5px dashed #e2e8f0;margin:8px 0 16px;"></div>
+            <p style="font-size:12px;color:#94a3b8;margin:0 0 12px;">
+                🔑 Kosongkan field password di bawah jika tidak ingin mengubah password pengguna.
+            </p>
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Password Baru</label>
+            <div style="position:relative;margin-bottom:16px;">
+                <input type="password" id="editPassword" name="new_password"
+                    placeholder="Kosongkan jika tidak diubah"
+                    style="width:100%;box-sizing:border-box;padding:10px 44px 10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;"
+                    onfocus="this.style.borderColor='#4f8cff'" onblur="this.style.borderColor='#e2e8f0'">
+                <span onclick="toggleEditPw('editPassword','eyeEdit')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#94a3b8;font-size:16px;" id="eyeEdit">👁</span>
+            </div>
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;">Konfirmasi Password Baru</label>
+            <div style="position:relative;margin-bottom:24px;">
+                <input type="password" id="editPasswordConfirm" name="confirm_new_password"
+                    placeholder="Ulangi password baru"
+                    style="width:100%;box-sizing:border-box;padding:10px 44px 10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;"
+                    onfocus="this.style.borderColor='#4f8cff'" onblur="this.style.borderColor='#e2e8f0'">
+                <span onclick="toggleEditPw('editPasswordConfirm','eyeEditConfirm')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#94a3b8;font-size:16px;" id="eyeEditConfirm">👁</span>
+            </div>
+
+            <div id="pwMismatchWarn" style="display:none;background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:16px;">
+                ⚠️ Password baru dan konfirmasi tidak cocok!
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button type="submit" onclick="return validatePw()"
+                    style="flex:1;padding:11px;background:linear-gradient(135deg,#4f8cff,#2563eb);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
+                    💾 Simpan Perubahan
+                </button>
+                <button type="button" onclick="closeEditModal()"
+                    style="padding:11px 18px;background:#f1f5f9;color:#475569;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+                    Batal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS -->
+<div id="modalHapus" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(0,0,0,.2);text-align:center;">
+        <div style="font-size:52px;margin-bottom:12px;">🗑️</div>
+        <h2 style="margin:0 0 8px;font-size:19px;color:#1e293b;">Hapus User?</h2>
+        <p id="hapusNamaText" style="color:#64748b;font-size:14px;margin-bottom:24px;"></p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+            <a id="hapusLink" href="#"
+                style="padding:10px 24px;background:#ef4444;color:#fff;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;">
+                Ya, Hapus
+            </a>
+            <button onclick="closeHapusModal()"
+                style="padding:10px 24px;background:#f1f5f9;color:#475569;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+                Batal
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== MODAL EDIT =====
+function openEditModal(id, nama, email, nik, role) {
+    document.getElementById('editUserId').value = id;
+    document.getElementById('editNama').value = nama;
+    document.getElementById('editEmail').value = email;
+    document.getElementById('editNik').value = nik;
+
+    // reset field password tiap buka modal
+    document.getElementById('editPassword').value = '';
+    document.getElementById('editPasswordConfirm').value = '';
+    document.getElementById('pwMismatchWarn').style.display = 'none';
+    var modal = document.getElementById('modalEditUser');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+    document.getElementById('modalEditUser').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// ===== MODAL HAPUS =====
+function confirmHapus(id, nama) {
+    document.getElementById('hapusNamaText').textContent =
+        'Apakah kamu yakin ingin menghapus akun "' + nama + '"? Tindakan ini tidak dapat dibatalkan.';
+    document.getElementById('hapusLink').href = '/admin/users/hapus/' + id;
+    var modal = document.getElementById('modalHapus');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeHapusModal() {
+    document.getElementById('modalHapus').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Tutup modal saat klik luar
+document.getElementById('modalEditUser').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+document.getElementById('modalHapus').addEventListener('click', function(e) {
+    if (e.target === this) closeHapusModal();
+});
+
+// ===== TOGGLE SHOW/HIDE PASSWORD =====
+function toggleEditPw(inputId, eyeId) {
+    var input = document.getElementById(inputId);
+    var eye = document.getElementById(eyeId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        eye.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        eye.textContent = '👁';
+    }
+}
+
+// ===== VALIDASI PASSWORD SEBELUM SUBMIT =====
+function validatePw() {
+    var pw = document.getElementById('editPassword').value;
+    var pwc = document.getElementById('editPasswordConfirm').value;
+    var warn = document.getElementById('pwMismatchWarn');
+    // jika password diisi, cek kecocokan
+    if (pw && pw !== pwc) {
+        warn.style.display = 'block';
+        return false;
+    }
+    warn.style.display = 'none';
+    return true;
+}
+
+// ===== LIVE SEARCH DATA USER =====
+function filterUsersTable() {
+    var query = document.getElementById('userSearchInput').value.toLowerCase().trim();
+    var rows = document.querySelectorAll('#userTableBody .user-row');
+    var noUserRow = document.getElementById('noUserRow');
+    var clearBtn = document.getElementById('clearUserSearch');
+    var totalText = document.getElementById('totalCountText');
+    var visibleCount = 0;
+
+    rows.forEach(function(row) {
+        var nik = row.querySelector('.row-nik').textContent.toLowerCase();
+        var nama = row.querySelector('.row-nama').textContent.toLowerCase();
+        var email = row.querySelector('.row-email').textContent.toLowerCase();
+
+        if (nik.indexOf(query) > -1 || nama.indexOf(query) > -1 || email.indexOf(query) > -1) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Update total count label dynamically
+    totalText.textContent = visibleCount;
+
+    if (visibleCount === 0) {
+        noUserRow.style.display = '';
+    } else {
+        noUserRow.style.display = 'none';
+    }
+
+    if (query.length > 0) {
+        clearBtn.style.display = 'inline-block';
+    } else {
+        clearBtn.style.display = 'none';
+    }
+}
+
+function clearUserSearchField() {
+    var input = document.getElementById('userSearchInput');
+    input.value = '';
+    filterUsersTable();
+    input.focus();
+}
+
+// Jalankan filter saat halaman selesai loading jika ada nilai pencarian default
+document.addEventListener('DOMContentLoaded', function() {
+    filterUsersTable();
+});
+</script>
+
+{% endblock %}
+

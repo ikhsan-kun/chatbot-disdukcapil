@@ -318,21 +318,19 @@ function closeDetail() {
 
 // admin proses
 function openProsesModal(id) {
-    const modal = document.getElementById("modalProses");
-    if (!modal) return;  // Fix Bug #11: null check
 
-    modal.style.display = "flex";
+    document.getElementById("modalProses").style.display =
+        "flex";
 
     // set form action dinamis
-    const form = document.getElementById("formProses");
-    if (form) form.action = "/admin/proses/" + id;
+    document.getElementById("formProses").action =
+        "/admin/proses/" + id;
 }
 
 function closeProsesModal() {
-    const modal = document.getElementById("modalProses");
-    if (!modal) return;  // Fix Bug #11: null check
 
-    modal.style.display = "none";
+    document.getElementById("modalProses").style.display =
+        "none";
 }
 
 

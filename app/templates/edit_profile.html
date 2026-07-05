@@ -25,86 +25,36 @@
     <!-- FOTO PROFILE -->
     <div>
         <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Foto Profile</label>
-        <input type="file" name="foto_profile" style="width: 100%;">
+        {% if user.foto_profile %}
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <img src="/static/uploads/{{ user.foto_profile }}" alt="Foto Profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: #dc2626; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" name="hapus_foto" value="true" style="width: 16px; height: 16px; cursor: pointer;">
+                🗑️ Hapus Foto Profil Sekarang
+            </label>
+        </div>
+        {% endif %}
+        <input type="file" name="foto_profile" accept=".jpg,.jpeg,.png" style="width: 100%;" onchange="validateProfilePhotoSize(this)">
+        <small style="color: #94a3b8; font-size: 12px; display: block; margin-top: 4px;">Format: JPG, JPEG, PNG &bull; Maks. 2 MB</small>
     </div>
 
     <!-- UBAH PASSWORD -->
     <hr style="border: 0; border-top: 1px solid var(--neutral-200); margin: 16px 0;">
     <h3 style="font-size: 16px; font-weight: 700; color: var(--neutral-800); margin-bottom: 8px;">Ubah Password</h3>
 
-    <!-- PASSWORD LAMA -->
     <div>
-        <label for="old_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Lama</label>
-        <div class="password-box">
-            <input
-                type="password"
-                id="old_password"
-                name="old_password"
-                placeholder="Masukkan password lama"
-                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
-            >
-            <span class="show-password" onclick="toggleOldPassword()" id="eyeIconOld">
-                <svg id="iconShowOld" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-                <svg id="iconHideOld" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-            </span>
-        </div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Lama</label>
+        <input type="password" name="old_password" placeholder="Masukkan password lama" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
     </div>
 
-    <!-- PASSWORD BARU -->
     <div>
-        <label for="new_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Baru</label>
-        <div class="password-box">
-            <input
-                type="password"
-                id="new_password"
-                name="new_password"
-                placeholder="Masukkan password baru (minimal 6 karakter)"
-                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
-            >
-            <span class="show-password" onclick="toggleNewPassword()" id="eyeIconNew">
-                <svg id="iconShowNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-                <svg id="iconHideNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-            </span>
-        </div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Password Baru</label>
+        <input type="password" name="new_password" placeholder="Masukkan password baru (minimal 6 karakter)" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
     </div>
 
-    <!-- KONFIRMASI PASSWORD BARU -->
     <div>
-        <label for="confirm_new_password" style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Konfirmasi Password Baru</label>
-        <div class="password-box">
-            <input
-                type="password"
-                id="confirm_new_password"
-                name="confirm_new_password"
-                placeholder="Konfirmasi password baru"
-                style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);"
-            >
-            <span class="show-password" onclick="toggleConfirmNewPassword()" id="eyeIconConfirmNew">
-                <svg id="iconShowConfirmNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-                <svg id="iconHideConfirmNew" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                </svg>
-            </span>
-        </div>
+        <label style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: block;">Konfirmasi Password Baru</label>
+        <input type="password" name="confirm_new_password" placeholder="Konfirmasi password baru" style="width: 100%; padding: 10px; border: 1px solid var(--neutral-200); border-radius: var(--radius-md);">
     </div>
 
     <!-- BUTTON -->
@@ -124,48 +74,14 @@
 </div>
 
 <script>
-function toggleOldPassword() {
-    const input = document.getElementById("old_password");
-    const iconShow = document.getElementById("iconShowOld");
-    const iconHide = document.getElementById("iconHideOld");
-    if (input.type === "password") {
-        input.type = "text";
-        iconShow.style.display = "none";
-        iconHide.style.display = "inline";
-    } else {
-        input.type = "password";
-        iconShow.style.display = "inline";
-        iconHide.style.display = "none";
-    }
-}
-
-function toggleNewPassword() {
-    const input = document.getElementById("new_password");
-    const iconShow = document.getElementById("iconShowNew");
-    const iconHide = document.getElementById("iconHideNew");
-    if (input.type === "password") {
-        input.type = "text";
-        iconShow.style.display = "none";
-        iconHide.style.display = "inline";
-    } else {
-        input.type = "password";
-        iconShow.style.display = "inline";
-        iconHide.style.display = "none";
-    }
-}
-
-function toggleConfirmNewPassword() {
-    const input = document.getElementById("confirm_new_password");
-    const iconShow = document.getElementById("iconShowConfirmNew");
-    const iconHide = document.getElementById("iconHideConfirmNew");
-    if (input.type === "password") {
-        input.type = "text";
-        iconShow.style.display = "none";
-        iconHide.style.display = "inline";
-    } else {
-        input.type = "password";
-        iconShow.style.display = "inline";
-        iconHide.style.display = "none";
+function validateProfilePhotoSize(input) {
+    if (input.files && input.files[0]) {
+        var fileSize = input.files[0].size;
+        var maxBytes = 2 * 1024 * 1024; // 2MB
+        if (fileSize > maxBytes) {
+            alert("Ukuran file terlalu besar! Maksimal ukuran foto profil adalah 2 MB.");
+            input.value = ""; // Reset
+        }
     }
 }
 </script>

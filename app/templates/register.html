@@ -11,6 +11,12 @@
         <h2>Daftar Akun</h2>
         <p class="login-subtitle">Buat akun baru untuk mengakses layanan</p>
 
+        {% if error %}
+        <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-weight: 600; font-size: 14px; text-align: left; display: flex; align-items: center; gap: 8px;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
         <form method="POST" action="/register">
 
             <label for="nik">NIK</label>
@@ -23,6 +29,7 @@
                 pattern="\d{16}"
                 required
                 oninput="this.value=this.value.replace(/\D/g,'').slice(0,16);"
+                value="{{ nik if nik else '' }}"
             >
             <small id="nikWarning" class="warning-text"></small>
 
@@ -33,6 +40,7 @@
                 name="nama"
                 placeholder="Masukkan nama lengkap"
                 required
+                value="{{ nama if nama else '' }}"
             >
 
             <label for="email">Email</label>
@@ -42,6 +50,7 @@
                 name="email"
                 placeholder="nama@email.com"
                 required
+                value="{{ email if email else '' }}"
             >
 
             <!-- PASSWORD -->
