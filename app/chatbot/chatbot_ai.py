@@ -206,13 +206,15 @@ def direct_match(question):
 # =============================================
 def generate_rag_response(question, context):
     import time
-    from google import genai
-
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
+    try:
+        from google import genai
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return None
+        client = genai.Client(api_key=api_key)
+    except Exception as e:
+        print(f"Gagal memuat google-genai atau inisialisasi Gemini: {e}")
         return None
-
-    client = genai.Client(api_key=api_key)
 
     prompt = f"""Anda adalah asisten virtual resmi chatbot Disdukcapil Kota Tegal yang ramah, sopan, dan profesional.
 

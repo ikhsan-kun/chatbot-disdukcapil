@@ -1,3 +1,4 @@
+from urllib import request
 from fastapi import FastAPI, Request, Form, UploadFile, File, Query
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -5,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from starlette.middleware.sessions import SessionMiddleware
 from typing import Optional, List
+from datetime import datetime
 
 import shutil
 import os
@@ -1353,13 +1355,26 @@ async def cetak_laporan(
     with engine.connect() as conn:
         data = conn.execute(text(query), params).mappings().all()
 
+        # Tanggal hari ini
+        today = datetime.now()
+
+        # Nama bulan Indonesia
+        bulan_indonesia = [
+            "Januari", "Februari", "Maret", "April",
+            "Mei", "Juni", "Juli", "Agustus",
+            "September", "Oktober", "November", "Desember"
+        ]
+
+        tanggal_ttd = f"Tegal, {today.day:02d} {bulan_indonesia[today.month-1]} {today.year}"
+
     return templates.TemplateResponse(
         request=request,
         name="laporan_pengajuan.html",
         context={
             "pengajuan": data,
             "bulan": bulan,
-            "tahun": tahun
+            "tahun": tahun,
+            "tanggal_ttd": tanggal_ttd
         }
     )
 
